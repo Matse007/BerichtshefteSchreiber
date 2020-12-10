@@ -115,5 +115,8 @@
   <ItemGroup>
     <None Include="Resources\WinWordLogoSmall.scale-140.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\WinWordLogoSmall.scale-80.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

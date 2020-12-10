@@ -174,15 +174,17 @@ namespace Berichtsheft
 
         }
 
-        public void closeWord()
+        public void CloseWord()
         {
-            if (documentopen == true)
+           if (doc == null)
             {
-
-
-
+                Console.WriteLine("No doc has been opened");
             }
-
+            else
+            {
+                doc.Close();
+                app.Quit();
+            }
 
         }
 

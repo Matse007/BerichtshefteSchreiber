@@ -24,11 +24,21 @@ namespace Berichtsheft
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
 
+        enum UIState
+        {
+            Dokumentwahl,
+            Dateneingabe,
+            Speichern,
+            Starten
+
+        }
+
+
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         public static extern bool ReleaseCapture();
-    //    ResourceWriter rw = new ResourceWriter(@".\Resources.resx");
+        //    ResourceWriter rw = new ResourceWriter(@".\Resources.resx");
         Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
         Document doc = null;
         bool documentopen;
@@ -52,9 +62,12 @@ namespace Berichtsheft
             return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(time, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
         }
 
+
+
         public Form1()
         {
             InitializeComponent();
+            alterstate(0);
             documentopen = false;
             dateTimePicker1.Format = DateTimePickerFormat.Custom;
             dateTimePicker1.CustomFormat = "dd/MM/yyyy";
@@ -62,6 +75,29 @@ namespace Berichtsheft
             dateTimePicker2.CustomFormat = "dd/MM/yyyy";
         }
 
+        private void alterstate(int state)
+        {
+            switch (state)
+            {
+                //starting case, file selection part.
+                case 0:
+                    dateTimePicker1.Visible = false;
+                    listBox1.Visible = false;
+                    dateTimePicker2.Visible = false;
+                    PnlNav.Height = btnStep1.Height;
+                    PnlNav.Top = btnStep1.Top;
+                    PnlNav.Left = btnStep1.Left;
+                    btnStep1.BackColor = Color.FromArgb(46,51,73);
+                    whandler.CloseWord();
+
+
+                    break;
+                case 1:
+                    break;
+
+
+            }
+        }
         private void Form1_Keypress(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
@@ -99,10 +135,14 @@ namespace Berichtsheft
         */
         private void openwordfile()
         {
+            whandler.CloseWord();
             OpenFileDialog dia = new OpenFileDialog();
+            dia.InitialDirectory = "C:\\Users";
+            dia.Filter = "Word Documents (*.doc;*docx)|*.doc; *docx";
             if (dia.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 whandler.Str = dia.FileName;
+                
             }
 
         }
@@ -195,214 +235,219 @@ namespace Berichtsheft
                  }
              }*/
 
-         }
+        }
 
 
 
 
-         //attempt to strip the filename from the path. Not working properly yet
+        //attempt to strip the filename from the path. Not working properly yet
 
 
-         //Returns the final savename. 
-         private string SaveFileName(int iterator, string firstname, string lastname, int kalenderwoche, string year, int ausbildungsjahr)
-         {
-             string finalsavefilename = iterator + ".Berichtsheft_" + firstname + "_" + lastname + "_" + year + "_KW_" + kalenderwoche + "_00" + ausbildungsjahr + ".docx";
+        //Returns the final savename. 
+        private string SaveFileName(int iterator, string firstname, string lastname, int kalenderwoche, string year, int ausbildungsjahr)
+        {
+            string finalsavefilename = iterator + ".Berichtsheft_" + firstname + "_" + lastname + "_" + year + "_KW_" + kalenderwoche + "_00" + ausbildungsjahr + ".docx";
 
-             return finalsavefilename;
+            return finalsavefilename;
 
-         }
+        }
 
-         private int DaysUntilMonday(DateTime currentdate)
-         {
-             if (((((int)DayOfWeek.Monday) - ((int)currentdate.DayOfWeek) + 7) % 7) != 0)
-             {
-                 return (((int)DayOfWeek.Monday) - ((int)currentdate.DayOfWeek) + 7) % 7;
-             }
-             else
-             {
-                 return 7;
-             }
-
-         }
-
-         /*Calculates the days until the next friday.
-          */
-
-            private int DaysUntilFriday(DateTime currentdate)
+        private int DaysUntilMonday(DateTime currentdate)
+        {
+            if (((((int)DayOfWeek.Monday) - ((int)currentdate.DayOfWeek) + 7) % 7) != 0)
             {
-                return (((int)DayOfWeek.Friday) - ((int)currentdate.DayOfWeek) + 7) % 7;
+                return (((int)DayOfWeek.Monday) - ((int)currentdate.DayOfWeek) + 7) % 7;
+            }
+            else
+            {
+                return 7;
+            }
 
+        }
+
+        /*Calculates the days until the next friday.
+         */
+
+        private int DaysUntilFriday(DateTime currentdate)
+        {
+            return (((int)DayOfWeek.Friday) - ((int)currentdate.DayOfWeek) + 7) % 7;
+
+        }
+
+
+
+        private void WriteInBookmark(string lesezeichen, string inhalt)
+        {
+            string bookmark = lesezeichen;
+            Bookmark bm = doc.Bookmarks[bookmark];
+            Range range = bm.Range;
+            range.Text = inhalt;
+            doc.Bookmarks.Add(bookmark, range);
+
+        }
+        private int AusbildungsJahr(int NachweisNummer)
+        {
+            if (NachweisNummer < 53)
+            {
+                return 1;
+            }
+            else if (NachweisNummer > 52 && NachweisNummer < 105)
+            {
+                return 2;
+
+            }
+            else if (NachweisNummer > 104)
+            {
+                return 3;
+            }
+            else
+            {
+                return 0;
             }
 
 
+        }
 
-            private void WriteInBookmark(string lesezeichen, string inhalt)
+        private int AmountOfWeeksInTotal(DateTime start, DateTime ende)
+        {
+            int weeks = (int)GetWeeks(start, ende);
+            return weeks;
+
+        }
+
+        /**Function to get the total amount of weeks. In case it is not a full 
+         * 
+         */
+        private decimal GetWeeks(DateTime start, DateTime end)
+        {
+            start = GetStartOfWeek(start);
+            end = GetStartOfWeek(end).AddDays(6);
+            decimal days = (int)(end - start).TotalDays;
+            int result = DateTime.Compare(start, end);
+            if (result > 0 && days == 0)
             {
-                string bookmark = lesezeichen;
-                Bookmark bm = doc.Bookmarks[bookmark];
-                Range range = bm.Range;
-                range.Text = inhalt;
-                doc.Bookmarks.Add(bookmark, range);
-
+                return 1;
             }
-            private int AusbildungsJahr(int NachweisNummer)
+            else
             {
-                if (NachweisNummer < 53)
-                {
-                    return 1;
-                }
-                else if (NachweisNummer > 52 && NachweisNummer < 105)
-                {
-                    return 2;
-
-                }
-                else if (NachweisNummer > 104)
-                {
-                    return 3;
-                }
-                else
-                {
-                    return 0;
-                }
-
-
-            }
-
-            private int AmountOfWeeksInTotal(DateTime start, DateTime ende)
-            {
-                int weeks = (int)GetWeeks(start, ende);
-                return weeks;
-
-            }
-
-            /**Function to get the total amount of weeks. In case it is not a full 
-             * 
-             */
-            private decimal GetWeeks(DateTime start, DateTime end)
-            {
-                start = GetStartOfWeek(start);
-                end = GetStartOfWeek(end).AddDays(6);
-                decimal days = (int)(end - start).TotalDays;
-                int result = DateTime.Compare(start, end);
-                if (result > 0 && days == 0)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return Math.Ceiling((days / 7));
-                }
-            }
-
-
-            private DateTime GetStartOfWeek(DateTime input)
-            {
-                int dayofWeek = (((int)input.DayOfWeek) + 6) % 7;
-                return input.Date.AddDays(-dayofWeek);
-
-            }
-
-
-
-            private void Form1_Load(object sender, EventArgs e)
-            {
-
-            }
-
-            private void panel1_Paint(object sender, PaintEventArgs e)
-            {
-
-            }
-
-            private void pictureBox1_Click(object sender, EventArgs e)
-            {
-
-            }
-
-            private void button2_Click(object sender, EventArgs e)
-            {
-                if
-                  (
-
-                      MessageBox.Show
-                      (
-                          "Möchten sie das Programm beenden?",
-                          "Achtung!",
-                          MessageBoxButtons.YesNo,
-                          MessageBoxIcon.Warning,
-                          MessageBoxDefaultButton.Button2 // hit Enter == No !
-                      )
-                      == DialogResult.Yes
-                  )
-                {
-                    if (documentopen == true)
-                    {
-                        doc.Close();
-                    }
-                    System.Windows.Forms.Application.Exit();
-                }
-
-
-            }
-
-            private void Form1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
-            {
-                if (e.Button == MouseButtons.Left)
-                {
-                    ReleaseCapture();
-                    SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
-                }
-            }
-
-            private void pictureBox1_Click_1(object sender, EventArgs e)
-            {
-                openwordfile();
-            }
-
-            private void button3_Click(object sender, EventArgs e)
-            {
-
-            }
-
-            private void textBox6_TextChanged(object sender, EventArgs e)
-            {
-
-            }
-
-            private void textBox7_TextChanged(object sender, EventArgs e)
-            {
-
-            }
-
-            private void textBox8_TextChanged(object sender, EventArgs e)
-            {
-
-            }
-
-            private void listBox4_SelectedIndexChanged(object sender, EventArgs e)
-            {
-
-            }
-
-            private void listBox3_SelectedIndexChanged(object sender, EventArgs e)
-            {
-
-            }
-
-            private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
-            {
-
-            }
-
-            private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-            {
-
-            }
-
-            private void textBox5_TextChanged(object sender, EventArgs e)
-            {
-
+                return Math.Ceiling((days / 7));
             }
         }
 
+
+        private DateTime GetStartOfWeek(DateTime input)
+        {
+            int dayofWeek = (((int)input.DayOfWeek) + 6) % 7;
+            return input.Date.AddDays(-dayofWeek);
+
+        }
+
+
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if
+              (
+
+                  MessageBox.Show
+                  (
+                      "Möchten sie das Programm beenden?",
+                      "Achtung!",
+                      MessageBoxButtons.YesNo,
+                      MessageBoxIcon.Warning,
+                      MessageBoxDefaultButton.Button2 // hit Enter == No !
+                  )
+                  == DialogResult.Yes
+              )
+            {
+                if (documentopen == true)
+                {
+                    doc.Close();
+                }
+                System.Windows.Forms.Application.Exit();
+            }
+
+
+        }
+
+        private void Form1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+            }
+        }
+
+        private void pictureBox1_Click_1(object sender, EventArgs e)
+        {
+            openwordfile();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox6_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox7_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox8_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listBox4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnStep1_Click(object sender, EventArgs e)
+        {
+            alterstate(0);
+        }
     }
+
+}
