@@ -99,8 +99,8 @@ namespace Berichtsheft
                 }
                 // int WeeksInTotal = (int)GetWeeks(weekstart, endtime);
 
-                Form2 selectnummer = new Form2(bookmarks, 0);
-                selectnummer.Text = "Berichtsheftnummerierung:";
+                //Form2 selectnummer = new Form2(bookmarks, 0);
+                //selectnummer.Text = "Berichtsheftnummerierung:";
                 /* if (selectnummer.ShowDialog() == DialogResult.OK)
                  {
                      bmnummer = selectnummer.bmnummer;

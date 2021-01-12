@@ -53,6 +53,9 @@ namespace Berichtsheft
             this.button3 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.labelselectionresult = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -294,7 +297,7 @@ namespace Berichtsheft
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Nirmala UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(230, 386);
+            this.label1.Location = new System.Drawing.Point(235, 158);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(0, 21);
             this.label1.TabIndex = 20;
@@ -323,14 +326,46 @@ namespace Berichtsheft
             // label3
             // 
             this.label3.AutoSize = true;
+            this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(230, 136);
+            this.label3.Location = new System.Drawing.Point(232, 109);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(398, 40);
             this.label3.TabIndex = 23;
             this.label3.Text = "Nun bitte per Drag und Drop die Lesezeichen einfügen.\r\n\r\n";
             this.label3.Visible = false;
+            // 
+            // labelselectionresult
+            // 
+            this.labelselectionresult.AutoSize = true;
+            this.labelselectionresult.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.labelselectionresult.ForeColor = System.Drawing.Color.White;
+            this.labelselectionresult.Location = new System.Drawing.Point(235, 387);
+            this.labelselectionresult.Name = "labelselectionresult";
+            this.labelselectionresult.Size = new System.Drawing.Size(207, 20);
+            this.labelselectionresult.TabIndex = 24;
+            this.labelselectionresult.Text = "Selection will be shown here";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.ForeColor = System.Drawing.Color.White;
+            this.label4.Location = new System.Drawing.Point(232, 194);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(67, 13);
+            this.label4.TabIndex = 25;
+            this.label4.Text = "Lesezeichen";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.ForeColor = System.Drawing.Color.White;
+            this.label5.Location = new System.Drawing.Point(655, 192);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(136, 13);
+            this.label5.TabIndex = 26;
+            this.label5.Text = "Ausgewähltes Lesezeichen";
             // 
             // Form1
             // 
@@ -338,6 +373,9 @@ namespace Berichtsheft
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(51)))), ((int)(((byte)(73)))));
             this.ClientSize = new System.Drawing.Size(951, 580);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.labelselectionresult);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.button3);
@@ -391,6 +429,9 @@ namespace Berichtsheft
         private Label label2;
         private Label label3;
         private Button btnStep5;
+        private Label labelselectionresult;
+        private Label label4;
+        private Label label5;
     }
 }
 

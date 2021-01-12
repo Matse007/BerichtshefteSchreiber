@@ -105,6 +105,9 @@ namespace Berichtsheft
                     btnStep3.BackColor = Color.FromArgb(24, 30, 54);
                     label1.Visible = false;
                     label3.Visible = false;
+                    label4.Visible = false;
+                    label5.Visible = false;
+                    labelselectionresult.Visible = false;
                     button3.Visible = false;
 
 
@@ -127,6 +130,10 @@ namespace Berichtsheft
                     listBox2.Items.Clear();
                     label1.Visible = true;
                     label3.Visible = true;
+                    label4.Visible = true;
+                    label5.Visible = true;
+                    labelselectionresult.Text = "Ausgewählte Lesezeichen: ";
+                    labelselectionresult.Visible = true;
                     label1.Text = labelstrings[0];
                     continueBtn.Visible = true;
                     foreach (String bm in whandler.Bookmarks)
@@ -149,6 +156,9 @@ namespace Berichtsheft
                     btnStep3.BackColor = Color.FromArgb(46, 51, 73);
                     label1.Visible = false;
                     label3.Visible = false;
+                    label4.Visible = false;
+                    label5.Visible = false;
+                    labelselectionresult.Visible = false;
                     button1.Enabled = false;
                     break;
 
@@ -360,22 +370,26 @@ namespace Berichtsheft
                     listBox2.Items.Clear();
                     label1.Text = labelstrings[1];
                     button3.Visible = true;
+                    labelselectionresult.Text = labelselectionresult.Text + "\nBerichtsheftnummer: " + whandler.Bmnummer;
                     break;
                 case 1:
                     whandler.Bmwochestart = listBox2.Items[0].ToString();
                     listBox2.Items.Clear();
                     label1.Text = labelstrings[2];
+                    labelselectionresult.Text = labelselectionresult.Text + "\nWochenstart: " + whandler.Bmwochestart;
                     break;
                 case 2:
                     whandler.Bmwocheende = listBox2.Items[0].ToString();
                     listBox2.Items.Clear();
                     label1.Text = labelstrings[3];
+                    labelselectionresult.Text = labelselectionresult.Text + "\nEnde der Woche: " + whandler.Bmwocheende;
                     break;
                 case 3:
                     whandler.Bmausbildungsjahr = listBox2.Items[0].ToString();
                     listBox2.Items.Clear();
                     label1.Text = "Alle Lesezeichen ausgewählt";
                     continueBtn.Visible = false;
+                    labelselectionresult.Text = labelselectionresult.Text + "\nAusbildungsjahr: " + whandler.Bmwochestart;
                     break;
             }
         }
@@ -397,6 +411,7 @@ namespace Berichtsheft
                     }
                     label1.Text = labelstrings[0];
                     button3.Visible = false;
+                    labelselectionresult.Text = labelselectionresult.Text.Substring(0, labelselectionresult.Text.LastIndexOf("\n"));
                     askingbm--;
 
 
@@ -412,6 +427,7 @@ namespace Berichtsheft
                         listBox1.Items.Add(listBox2.Items[0]);
                     }
                     label1.Text = labelstrings[1];
+                    labelselectionresult.Text = labelselectionresult.Text.Substring(0, labelselectionresult.Text.LastIndexOf("\n"));
                     askingbm--;
                     break;
                 case 3:
@@ -425,6 +441,7 @@ namespace Berichtsheft
                         listBox1.Items.Add(listBox2.Items[0]);
                     }
                     label1.Text = labelstrings[2];
+                    labelselectionresult.Text = labelselectionresult.Text.Substring(0, labelselectionresult.Text.LastIndexOf("\n"));
                     askingbm--;
                     break;
                 case 4:
@@ -438,7 +455,9 @@ namespace Berichtsheft
                         listBox1.Items.Add(listBox2.Items[0]);
                     }
                     label1.Text = labelstrings[3];
-                    askingbm--;
+                    continueBtn.Visible = true;
+                    labelselectionresult.Text = labelselectionresult.Text.Substring(0, labelselectionresult.Text.LastIndexOf("\n"));
+                    askingbm--;                   
                     break;
             }
         }
