@@ -31,13 +31,36 @@ namespace Berichtsheft
         public string FolderName { get => folderName; set => folderName = value; }
         public int Year { get => year; set => year = value; }
         public List<string> Bookmarks { get => bookmarks; set => bookmarks = value; }
-        Document doc = null;
+        private Document doc = null;
+        public Document Doc { get => doc; set => doc = value; }
+        public string Bmnummer { get => bmnummer; set => bmnummer = value; }
+        private string bmnummer = null;
+        public string Bmwochestart { get => bmwochestart; set => bmwochestart = value; }
+        private string bmwochestart = null;
+        public string Bmwocheende { get => bmwocheende; set => bmwocheende = value; }
+        private string bmwocheende = null;
+        public string Bmausbildungsjahr { get => bmausbildungsjahr; set => bmausbildungsjahr = value; }
+        private string bmausbildungsjahr = null;
+
+
 
         //path where we save the file.
 
         private string folderName;
 
+        public void populateBookmarks()
+        {
+            bookmarks.Clear();
+            foreach (Bookmark bm in doc.Bookmarks)
+            {
+                bookmarks.Add(bm.Name);
+            }
+        }
 
+        public void openDocument()
+        {
+            doc = app.Documents.Open(str);
+        }
 
         public void everything()
         {
@@ -47,10 +70,6 @@ namespace Berichtsheft
              * After successfully selecting a folder, the application continues with the following steps.
              * 
              **/
-            string bmnummer = null;
-            string bmwochestart = null;
-            string bmwocheende = null;
-            string bmausbildungsjahr = null;
             CommonOpenFileDialog folderdialog = new CommonOpenFileDialog();
             folderdialog.Title = "Ordner zum Speichern der Berichtshefte wählen:";
             folderdialog.InitialDirectory = "C:\\Users";
@@ -174,17 +193,31 @@ namespace Berichtsheft
 
         }
 
-        public void CloseWord()
+        public void CloseWord(char yes)
         {
-           if (doc == null)
+            if (doc == null)
             {
                 Console.WriteLine("No doc has been opened");
             }
             else
             {
-                doc.Close();
-                app.Quit();
+                switch (yes)
+                {
+
+                    case 'y':
+                        doc.Close();
+                        app.Quit();
+                        break;
+                    case 'n':
+                        doc.Close();
+                        break;
+                    default:
+                        Console.WriteLine("While closing the current word document, something went wrong");
+                        break;
+
+                }
             }
+
 
         }
 
