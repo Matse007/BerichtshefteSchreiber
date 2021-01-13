@@ -24,6 +24,7 @@ namespace Berichtsheft
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
 
+
         enum UIState
         {
             Dokumentwahl,
@@ -43,8 +44,15 @@ namespace Berichtsheft
         Document doc = null;
         bool documentopen;
         int year;
+        string[] labelstrings = {"Bitte das Lesezeichen für die Berichtsheftnummer auswählen.",
+            "Bitte das Lesezeichen für den Anfang der Woche auswählen.",
+            "Bitte das Lesezeichen für das Ende der Woche auswählen.",
+             "Bitte das Lesezeichen für das Ausbildungsjahr auswählen."};
+
         List<string> bookmarks = new List<string>();
         WordHandler whandler = new WordHandler();
+        //Variable for looking at what step we are for the bookmark questioning.
+        int askingbm = 0;
         // This presumes that weeks start with Monday.
         // Week 1 is the 1st week of the year with a Thursday in it.
         public static int GetIso8601WeekOfYear(DateTime time)
@@ -69,60 +77,100 @@ namespace Berichtsheft
             InitializeComponent();
             alterstate(0);
             documentopen = false;
+            listBox1.AllowDrop = true;
+            listBox2.AllowDrop = true;
             dateTimePicker1.Format = DateTimePickerFormat.Custom;
             dateTimePicker1.CustomFormat = "dd/MM/yyyy";
             dateTimePicker2.Format = DateTimePickerFormat.Custom;
             dateTimePicker2.CustomFormat = "dd/MM/yyyy";
+
         }
 
         private void alterstate(int state)
         {
+
             switch (state)
             {
                 //starting case, file selection part.
                 case 0:
                     dateTimePicker1.Visible = false;
-                    listBox1.Visible = false;
                     dateTimePicker2.Visible = false;
+                    listBox1.Visible = false;
                     PnlNav.Height = btnStep1.Height;
                     PnlNav.Top = btnStep1.Top;
                     PnlNav.Left = btnStep1.Left;
-                    btnStep1.BackColor = Color.FromArgb(46,51,73);
-                    whandler.CloseWord();
+                    continueBtn.Visible = false;
+                    btnStep1.BackColor = Color.FromArgb(46, 51, 73);
+                    btnStep2.BackColor = Color.FromArgb(24, 30, 54);
+                    btnStep3.BackColor = Color.FromArgb(24, 30, 54);
+                    label1.Visible = false;
+                    label3.Visible = false;
+                    label4.Visible = false;
+                    label5.Visible = false;
+                    labelselectionresult.Visible = false;
+                    button3.Visible = false;
 
 
                     break;
                 case 1:
+
+                    whandler.populateBookmarks();
+                    dateTimePicker1.Visible = false;
+                    dateTimePicker2.Visible = false;
+                    listBox1.Visible = true;
+                    listBox2.Visible = true;
+                    PnlNav.Height = btnStep2.Height;
+                    PnlNav.Top = btnStep2.Top;
+                    PnlNav.Left = btnStep2.Left;
+                    //Changing all button colours
+                    btnStep1.BackColor = Color.FromArgb(24, 30, 54);
+                    btnStep3.BackColor = Color.FromArgb(24, 30, 54);
+                    btnStep2.BackColor = Color.FromArgb(46, 51, 73);
+                    listBox1.Items.Clear();
+                    listBox2.Items.Clear();
+                    label1.Visible = true;
+                    label3.Visible = true;
+                    label4.Visible = true;
+                    label5.Visible = true;
+                    labelselectionresult.Text = "Ausgewählte Lesezeichen: ";
+                    labelselectionresult.Visible = true;
+                    label1.Text = labelstrings[0];
+                    continueBtn.Visible = true;
+                    foreach (String bm in whandler.Bookmarks)
+                    {
+                        listBox1.Items.Add(bm);
+                    }
+
+                    break;
+                case 2:
+                    dateTimePicker1.Visible = true;
+                    dateTimePicker2.Visible = true;
+                    listBox1.Visible = false;
+                    listBox2.Visible = false;
+                    PnlNav.Height = btnStep3.Height;
+                    PnlNav.Top = btnStep3.Top;
+                    PnlNav.Left = btnStep3.Left;
+                    //Changing all button colours
+                    btnStep1.BackColor = Color.FromArgb(24, 30, 54);
+                    btnStep2.BackColor = Color.FromArgb(24, 30, 54);
+                    btnStep3.BackColor = Color.FromArgb(46, 51, 73);
+                    label1.Visible = false;
+                    label3.Visible = false;
+                    label4.Visible = false;
+                    label5.Visible = false;
+                    labelselectionresult.Visible = false;
+                    button1.Enabled = false;
                     break;
 
 
             }
+            buttondesigner();
         }
         private void Form1_Keypress(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
             {
-                if
-                (
-
-                    MessageBox.Show
-                    (
-                        "Möchten sie das Programm beenden?",
-                        "Achtung!",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Warning,
-                        MessageBoxDefaultButton.Button2 // hit Enter == No !
-                    )
-
-                    == DialogResult.Yes
-                )
-                {
-                    if (documentopen == true)
-                    {
-                        doc.Close();
-                    }
-                    System.Windows.Forms.Application.Exit();
-                }
+                closeProgramm();
             }
         }
 
@@ -135,17 +183,22 @@ namespace Berichtsheft
         */
         private void openwordfile()
         {
-            whandler.CloseWord();
+            whandler.CloseWord('n');
             OpenFileDialog dia = new OpenFileDialog();
+
             dia.InitialDirectory = "C:\\Users";
             dia.Filter = "Word Documents (*.doc;*docx)|*.doc; *docx";
             if (dia.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 whandler.Str = dia.FileName;
-                
+                whandler.openDocument();
+                alterstate(1);
+                textBox9.Text = dia.FileName;
             }
 
+
         }
+
         private void button1_Click(object sender, EventArgs e)
         {
             openwordfile();
@@ -308,6 +361,106 @@ namespace Berichtsheft
 
         }
 
+        private void writebmtowhandler(int state)
+        {
+            switch (state)
+            {
+                case 0:
+                    whandler.Bmnummer = listBox2.Items[0].ToString();
+                    listBox2.Items.Clear();
+                    label1.Text = labelstrings[1];
+                    button3.Visible = true;
+                    labelselectionresult.Text = labelselectionresult.Text + "\nBerichtsheftnummer: " + whandler.Bmnummer;
+                    break;
+                case 1:
+                    whandler.Bmwochestart = listBox2.Items[0].ToString();
+                    listBox2.Items.Clear();
+                    label1.Text = labelstrings[2];
+                    labelselectionresult.Text = labelselectionresult.Text + "\nWochenstart: " + whandler.Bmwochestart;
+                    break;
+                case 2:
+                    whandler.Bmwocheende = listBox2.Items[0].ToString();
+                    listBox2.Items.Clear();
+                    label1.Text = labelstrings[3];
+                    labelselectionresult.Text = labelselectionresult.Text + "\nEnde der Woche: " + whandler.Bmwocheende;
+                    break;
+                case 3:
+                    whandler.Bmausbildungsjahr = listBox2.Items[0].ToString();
+                    listBox2.Items.Clear();
+                    label1.Text = "Alle Lesezeichen ausgewählt";
+                    continueBtn.Visible = false;
+                    labelselectionresult.Text = labelselectionresult.Text + "\nAusbildungsjahr: " + whandler.Bmwochestart;
+                    break;
+            }
+        }
+        private void undowritingbmhandler(int state)
+        {
+            switch (state)
+            {
+                case 0:
+                    break;
+                case 1:
+                    if (whandler.Bmnummer != null)
+                    {
+                        listBox1.Items.Add(whandler.Bmnummer);
+                        whandler.Bmnummer = null;
+                    }
+                    if (listBox2.Items.Count != 0)
+                    {
+                        listBox1.Items.Add(listBox2.Items[0]);
+                    }
+                    label1.Text = labelstrings[0];
+                    button3.Visible = false;
+                    labelselectionresult.Text = labelselectionresult.Text.Substring(0, labelselectionresult.Text.LastIndexOf("\n"));
+                    askingbm--;
+
+
+                    break;
+                case 2:
+                    if (whandler.Bmwochestart != null)
+                    {
+                        listBox1.Items.Add(whandler.Bmwochestart);
+                        whandler.Bmwochestart = null;
+                    }
+                    if (listBox2.Items.Count != 0)
+                    {
+                        listBox1.Items.Add(listBox2.Items[0]);
+                    }
+                    label1.Text = labelstrings[1];
+                    labelselectionresult.Text = labelselectionresult.Text.Substring(0, labelselectionresult.Text.LastIndexOf("\n"));
+                    askingbm--;
+                    break;
+                case 3:
+                    if (whandler.Bmwocheende != null)
+                    {
+                        listBox1.Items.Add(whandler.Bmwocheende);
+                        whandler.Bmwocheende = null;
+                    }
+                    if (listBox2.Items.Count != 0)
+                    {
+                        listBox1.Items.Add(listBox2.Items[0]);
+                    }
+                    label1.Text = labelstrings[2];
+                    labelselectionresult.Text = labelselectionresult.Text.Substring(0, labelselectionresult.Text.LastIndexOf("\n"));
+                    askingbm--;
+                    break;
+                case 4:
+                    if (whandler.Bmausbildungsjahr != null)
+                    {
+                        listBox1.Items.Add(whandler.Bmausbildungsjahr);
+                        whandler.Bmausbildungsjahr = null;
+                    }
+                    if (listBox2.Items.Count != 0)
+                    {
+                        listBox1.Items.Add(listBox2.Items[0]);
+                    }
+                    label1.Text = labelstrings[3];
+                    continueBtn.Visible = true;
+                    labelselectionresult.Text = labelselectionresult.Text.Substring(0, labelselectionresult.Text.LastIndexOf("\n"));
+                    askingbm--;                   
+                    break;
+            }
+        }
         private int AmountOfWeeksInTotal(DateTime start, DateTime ende)
         {
             int weeks = (int)GetWeeks(start, ende);
@@ -359,7 +512,7 @@ namespace Berichtsheft
 
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void closeProgramm()
         {
             if
               (
@@ -375,12 +528,15 @@ namespace Berichtsheft
                   == DialogResult.Yes
               )
             {
-                if (documentopen == true)
-                {
-                    doc.Close();
-                }
+                whandler.CloseWord('y');
                 System.Windows.Forms.Application.Exit();
             }
+
+
+        }
+        private void button2_Click(object sender, EventArgs e)
+        {
+            closeProgramm();
 
 
         }
@@ -389,6 +545,7 @@ namespace Berichtsheft
         {
             if (e.Button == MouseButtons.Left)
             {
+
                 ReleaseCapture();
                 SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
             }
@@ -397,11 +554,32 @@ namespace Berichtsheft
         private void pictureBox1_Click_1(object sender, EventArgs e)
         {
             openwordfile();
+
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
 
+            if (listBox2.Items.Count == 0)
+            {
+                if (labelstrings.Any(x => label1.Text.EndsWith(x)) && label1.Text.StartsWith("Keine Auswahl wurde getroffen!"))
+                {
+                    //Alles bleibt so wie es ist 
+
+                    label1.Text = label1.Text;
+
+                }
+                else
+                {
+                    label1.Text = "Keine Auswahl wurde getroffen! " + label1.Text;
+                }
+            }
+            else if (listBox2.Items.Count == 1)
+            {
+                writebmtowhandler(askingbm);
+                askingbm++;
+
+            }
         }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
@@ -446,8 +624,90 @@ namespace Berichtsheft
 
         private void btnStep1_Click(object sender, EventArgs e)
         {
-            alterstate(0);
+
+        }
+
+        private void btnStep2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listBox2_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.Text))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+
+        }
+
+
+        private void listBox2_DragDrop(object sender, DragEventArgs e)
+        {
+            if (listBox2.Items.Count == 0)
+            {
+                listBox2.Items.Add(e.Data.GetData(DataFormats.Text));
+                listBox1.Items.Remove(e.Data.GetData(DataFormats.Text));
+            }
+            else
+            {
+                listBox1.Items.Add(listBox2.Items[0]);
+                listBox2.Items.Remove(listBox2.Items[0]);
+                listBox2.Items.Add(e.Data.GetData(DataFormats.Text));
+                listBox1.Items.Remove(e.Data.GetData(DataFormats.Text));
+            }
+        }
+
+        private void listBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            listBox2.DoDragDrop(listBox1.SelectedItem.ToString(), DragDropEffects.Copy);
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+
+            undowritingbmhandler(askingbm);
+
+
+        }
+        private void buttondesigner()
+        {
+            btnStep1.FlatAppearance.MouseOverBackColor = btnStep1.BackColor;
+            btnStep1.FlatAppearance.MouseDownBackColor = btnStep1.BackColor;
+            btnStep1.BackColorChanged += (s, e) =>
+            {
+                btnStep1.FlatAppearance.MouseOverBackColor = button1.BackColor;
+            };
+            btnStep2.FlatAppearance.MouseOverBackColor = btnStep2.BackColor;
+            btnStep2.FlatAppearance.MouseDownBackColor = btnStep2.BackColor;
+            btnStep2.BackColorChanged += (s, e) =>
+            {
+                btnStep2.FlatAppearance.MouseOverBackColor = button2.BackColor;
+            };
+            btnStep3.FlatAppearance.MouseOverBackColor = btnStep3.BackColor;
+            btnStep3.FlatAppearance.MouseDownBackColor = btnStep3.BackColor;
+            btnStep3.BackColorChanged += (s, e) =>
+            {
+                btnStep3.FlatAppearance.MouseOverBackColor = button3.BackColor;
+            };
+            btnStep4.FlatAppearance.MouseOverBackColor = btnStep4.BackColor;
+            btnStep4.FlatAppearance.MouseDownBackColor = btnStep4.BackColor;
+            btnStep4.BackColorChanged += (s, e) =>
+            {
+                btnStep4.FlatAppearance.MouseOverBackColor = btnStep4.BackColor;
+            };
+            btnStep5.FlatAppearance.MouseOverBackColor = btnStep5.BackColor;
+            btnStep5.FlatAppearance.MouseDownBackColor = btnStep5.BackColor;
+            btnStep5.BackColorChanged += (s, e) =>
+            {
+                btnStep5.FlatAppearance.MouseOverBackColor = btnStep5.BackColor;
+            };
         }
     }
+
 
 }
