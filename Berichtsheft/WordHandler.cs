@@ -206,10 +206,17 @@ namespace Berichtsheft
 
                     case 'y':
                         doc.Close();
+                        doc = null;
                         app.Quit();
+                        System.Runtime.InteropServices.Marshal.FinalReleaseComObject(app);
+                        GC.Collect();
+                        GC.WaitForPendingFinalizers();
                         break;
                     case 'n':
                         doc.Close();
+                        doc = null;
+                        GC.Collect();
+                        GC.WaitForPendingFinalizers();
                         break;
                     default:
                         Console.WriteLine("While closing the current word document, something went wrong");

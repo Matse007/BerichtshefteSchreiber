@@ -40,7 +40,7 @@ namespace Berichtsheft
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         public static extern bool ReleaseCapture();
         //    ResourceWriter rw = new ResourceWriter(@".\Resources.resx");
-        Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
+        //Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
         Document doc = null;
         bool documentopen;
         int year;
@@ -664,7 +664,15 @@ namespace Berichtsheft
 
         private void listBox_MouseDown(object sender, MouseEventArgs e)
         {
-            listBox2.DoDragDrop(listBox1.SelectedItem.ToString(), DragDropEffects.Copy);
+            try
+            {
+                listBox2.DoDragDrop(listBox1.SelectedItem.ToString(), DragDropEffects.Copy);
+            }
+            catch (System.NullReferenceException)
+            {
+
+                throw;
+            }
         }
 
         private void button3_Click_1(object sender, EventArgs e)
