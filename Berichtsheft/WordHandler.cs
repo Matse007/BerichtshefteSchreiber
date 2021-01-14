@@ -192,7 +192,18 @@ namespace Berichtsheft
             return finalsavefilename;
 
         }
-
+        public bool allVariablesSet()
+        {
+            if (String.IsNullOrEmpty(bmnummer) || String.IsNullOrEmpty(bmausbildungsjahr) || String.IsNullOrEmpty(bmwochestart)
+                || String.IsNullOrEmpty(bmwocheende))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
         public void CloseWord(char yes)
         {
             if (doc == null)

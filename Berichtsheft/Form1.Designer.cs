@@ -43,22 +43,28 @@ namespace Berichtsheft
             this.PnlNav = new System.Windows.Forms.Panel();
             this.btnStep1 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.button2 = new System.Windows.Forms.Button();
             this.listBox2 = new System.Windows.Forms.ListBox();
-            this.continueBtn = new System.Windows.Forms.Button();
+            this.btnConfirmSelection = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.textBox9 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
+            this.btnUndoSelection = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.labelselectionresult = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.btnNextMenu = new System.Windows.Forms.Button();
+            this.btnPreviousMenu = new System.Windows.Forms.Button();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.lblComboBox1 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // dateTimePicker1
@@ -69,7 +75,7 @@ namespace Berichtsheft
             this.dateTimePicker1.CalendarTitleBackColor = System.Drawing.Color.Transparent;
             this.dateTimePicker1.CalendarTitleForeColor = System.Drawing.Color.Transparent;
             this.dateTimePicker1.CalendarTrailingForeColor = System.Drawing.Color.Transparent;
-            this.dateTimePicker1.Location = new System.Drawing.Point(235, 109);
+            this.dateTimePicker1.Location = new System.Drawing.Point(12, 64);
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(197, 20);
             this.dateTimePicker1.TabIndex = 0;
@@ -84,7 +90,7 @@ namespace Berichtsheft
             this.button1.FlatAppearance.BorderSize = 0;
             this.button1.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(51)))), ((int)(((byte)(65)))));
             this.button1.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(114)))), ((int)(((byte)(126)))), ((int)(((byte)(176)))));
-            this.button1.Location = new System.Drawing.Point(746, 64);
+            this.button1.Location = new System.Drawing.Point(702, 60);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 20);
             this.button1.TabIndex = 1;
@@ -94,7 +100,7 @@ namespace Berichtsheft
             // 
             // dateTimePicker2
             // 
-            this.dateTimePicker2.Location = new System.Drawing.Point(234, 135);
+            this.dateTimePicker2.Location = new System.Drawing.Point(11, 90);
             this.dateTimePicker2.Name = "dateTimePicker2";
             this.dateTimePicker2.Size = new System.Drawing.Size(200, 20);
             this.dateTimePicker2.TabIndex = 5;
@@ -118,7 +124,7 @@ namespace Berichtsheft
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(186, 580);
+            this.panel1.Size = new System.Drawing.Size(186, 531);
             this.panel1.TabIndex = 8;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
@@ -209,23 +215,13 @@ namespace Berichtsheft
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.pictureBox1);
+            this.panel2.Controls.Add(this.dateTimePicker1);
+            this.panel2.Controls.Add(this.dateTimePicker2);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(186, 167);
             this.panel2.TabIndex = 0;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.pictureBox1.Image = global::Berichtsheft.Properties.Resources.WinWordLogoSmall_scale_140;
-            this.pictureBox1.Location = new System.Drawing.Point(41, 17);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(90, 90);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click_1);
             // 
             // button2
             // 
@@ -248,7 +244,7 @@ namespace Berichtsheft
             this.listBox2.ForeColor = System.Drawing.Color.White;
             this.listBox2.FormattingEnabled = true;
             this.listBox2.ItemHeight = 20;
-            this.listBox2.Location = new System.Drawing.Point(656, 207);
+            this.listBox2.Location = new System.Drawing.Point(742, 379);
             this.listBox2.Name = "listBox2";
             this.listBox2.Size = new System.Drawing.Size(164, 40);
             this.listBox2.TabIndex = 13;
@@ -257,16 +253,18 @@ namespace Berichtsheft
             this.listBox2.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBox2_DragDrop);
             this.listBox2.DragEnter += new System.Windows.Forms.DragEventHandler(this.listBox2_DragEnter);
             // 
-            // continueBtn
+            // btnConfirmSelection
             // 
-            this.continueBtn.Location = new System.Drawing.Point(745, 266);
-            this.continueBtn.Name = "continueBtn";
-            this.continueBtn.Size = new System.Drawing.Size(75, 23);
-            this.continueBtn.TabIndex = 11;
-            this.continueBtn.Text = "Weiter";
-            this.continueBtn.UseVisualStyleBackColor = true;
-            this.continueBtn.Visible = false;
-            this.continueBtn.Click += new System.EventHandler(this.button3_Click);
+            this.btnConfirmSelection.BackColor = System.Drawing.Color.White;
+            this.btnConfirmSelection.FlatAppearance.BorderSize = 0;
+            this.btnConfirmSelection.Location = new System.Drawing.Point(831, 438);
+            this.btnConfirmSelection.Name = "btnConfirmSelection";
+            this.btnConfirmSelection.Size = new System.Drawing.Size(75, 23);
+            this.btnConfirmSelection.TabIndex = 11;
+            this.btnConfirmSelection.Text = "Bestätigen";
+            this.btnConfirmSelection.UseVisualStyleBackColor = false;
+            this.btnConfirmSelection.Visible = false;
+            this.btnConfirmSelection.Click += new System.EventHandler(this.button3_Click);
             // 
             // listBox1
             // 
@@ -276,7 +274,7 @@ namespace Berichtsheft
             this.listBox1.ForeColor = System.Drawing.Color.White;
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 20;
-            this.listBox1.Location = new System.Drawing.Point(234, 207);
+            this.listBox1.Location = new System.Drawing.Point(320, 379);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(273, 140);
             this.listBox1.TabIndex = 10;
@@ -286,7 +284,10 @@ namespace Berichtsheft
             // 
             // textBox9
             // 
-            this.textBox9.Location = new System.Drawing.Point(234, 64);
+            this.textBox9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(27)))), ((int)(((byte)(29)))));
+            this.textBox9.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBox9.ForeColor = System.Drawing.Color.White;
+            this.textBox9.Location = new System.Drawing.Point(235, 61);
             this.textBox9.Name = "textBox9";
             this.textBox9.ReadOnly = true;
             this.textBox9.Size = new System.Drawing.Size(461, 20);
@@ -297,29 +298,30 @@ namespace Berichtsheft
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Nirmala UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(235, 158);
+            this.label1.Location = new System.Drawing.Point(321, 330);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(0, 21);
             this.label1.TabIndex = 20;
             // 
-            // button3
+            // btnUndoSelection
             // 
-            this.button3.Location = new System.Drawing.Point(656, 266);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 21;
-            this.button3.Text = "Zurück";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click_1);
+            this.btnUndoSelection.BackColor = System.Drawing.Color.White;
+            this.btnUndoSelection.Location = new System.Drawing.Point(742, 438);
+            this.btnUndoSelection.Name = "btnUndoSelection";
+            this.btnUndoSelection.Size = new System.Drawing.Size(75, 23);
+            this.btnUndoSelection.TabIndex = 21;
+            this.btnUndoSelection.Text = "Rückgangig";
+            this.btnUndoSelection.UseVisualStyleBackColor = false;
+            this.btnUndoSelection.Click += new System.EventHandler(this.button3_Click_1);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.White;
             this.label2.Location = new System.Drawing.Point(232, 42);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(195, 20);
+            this.label2.Size = new System.Drawing.Size(161, 16);
             this.label2.TabIndex = 22;
             this.label2.Text = "Dateipfad zum Dokument:";
             // 
@@ -328,12 +330,12 @@ namespace Berichtsheft
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(232, 109);
+            this.label3.ForeColor = System.Drawing.Color.DarkGray;
+            this.label3.Location = new System.Drawing.Point(238, 89);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(398, 40);
+            this.label3.Size = new System.Drawing.Size(103, 20);
             this.label3.TabIndex = 23;
-            this.label3.Text = "Nun bitte per Drag und Drop die Lesezeichen einfügen.\r\n\r\n";
+            this.label3.Text = "Lesezeichen:";
             this.label3.Visible = false;
             // 
             // labelselectionresult
@@ -341,7 +343,7 @@ namespace Berichtsheft
             this.labelselectionresult.AutoSize = true;
             this.labelselectionresult.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.labelselectionresult.ForeColor = System.Drawing.Color.White;
-            this.labelselectionresult.Location = new System.Drawing.Point(235, 387);
+            this.labelselectionresult.Location = new System.Drawing.Point(711, 473);
             this.labelselectionresult.Name = "labelselectionresult";
             this.labelselectionresult.Size = new System.Drawing.Size(207, 20);
             this.labelselectionresult.TabIndex = 24;
@@ -351,7 +353,7 @@ namespace Berichtsheft
             // 
             this.label4.AutoSize = true;
             this.label4.ForeColor = System.Drawing.Color.White;
-            this.label4.Location = new System.Drawing.Point(232, 194);
+            this.label4.Location = new System.Drawing.Point(318, 366);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(67, 13);
             this.label4.TabIndex = 25;
@@ -361,34 +363,123 @@ namespace Berichtsheft
             // 
             this.label5.AutoSize = true;
             this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(655, 192);
+            this.label5.Location = new System.Drawing.Point(741, 364);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(136, 13);
             this.label5.TabIndex = 26;
             this.label5.Text = "Ausgewähltes Lesezeichen";
+            // 
+            // btnNextMenu
+            // 
+            this.btnNextMenu.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
+            this.btnNextMenu.BackColor = System.Drawing.Color.White;
+            this.btnNextMenu.Enabled = false;
+            this.btnNextMenu.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.btnNextMenu.Location = new System.Drawing.Point(580, 504);
+            this.btnNextMenu.Name = "btnNextMenu";
+            this.btnNextMenu.Size = new System.Drawing.Size(75, 23);
+            this.btnNextMenu.TabIndex = 27;
+            this.btnNextMenu.Text = "Weiter";
+            this.btnNextMenu.UseVisualStyleBackColor = false;
+            this.btnNextMenu.Click += new System.EventHandler(this.btnNextMenu_Click);
+            // 
+            // btnPreviousMenu
+            // 
+            this.btnPreviousMenu.BackColor = System.Drawing.Color.White;
+            this.btnPreviousMenu.Enabled = false;
+            this.btnPreviousMenu.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.btnPreviousMenu.Location = new System.Drawing.Point(440, 504);
+            this.btnPreviousMenu.Name = "btnPreviousMenu";
+            this.btnPreviousMenu.Size = new System.Drawing.Size(75, 23);
+            this.btnPreviousMenu.TabIndex = 28;
+            this.btnPreviousMenu.Text = "Zurück";
+            this.btnPreviousMenu.UseVisualStyleBackColor = false;
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(410, 120);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(121, 21);
+            this.comboBox1.TabIndex = 29;
+            // 
+            // lblComboBox1
+            // 
+            this.lblComboBox1.AutoSize = true;
+            this.lblComboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblComboBox1.ForeColor = System.Drawing.Color.White;
+            this.lblComboBox1.Location = new System.Drawing.Point(239, 121);
+            this.lblComboBox1.Name = "lblComboBox1";
+            this.lblComboBox1.Size = new System.Drawing.Size(96, 16);
+            this.lblComboBox1.TabIndex = 30;
+            this.lblComboBox1.Text = "lblComboBox1";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.ForeColor = System.Drawing.Color.White;
+            this.label6.Location = new System.Drawing.Point(239, 148);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(45, 16);
+            this.label6.TabIndex = 32;
+            this.label6.Text = "label6";
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(410, 147);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(121, 21);
+            this.comboBox2.TabIndex = 31;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.ForeColor = System.Drawing.Color.White;
+            this.label7.Location = new System.Drawing.Point(239, 175);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(45, 16);
+            this.label7.TabIndex = 34;
+            this.label7.Text = "label7";
+            // 
+            // comboBox3
+            // 
+            this.comboBox3.FormattingEnabled = true;
+            this.comboBox3.Location = new System.Drawing.Point(410, 174);
+            this.comboBox3.Name = "comboBox3";
+            this.comboBox3.Size = new System.Drawing.Size(121, 21);
+            this.comboBox3.TabIndex = 33;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(51)))), ((int)(((byte)(73)))));
-            this.ClientSize = new System.Drawing.Size(951, 580);
+            this.ClientSize = new System.Drawing.Size(951, 531);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.comboBox3);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.comboBox2);
+            this.Controls.Add(this.lblComboBox1);
+            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.btnPreviousMenu);
+            this.Controls.Add(this.btnNextMenu);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
             this.Controls.Add(this.labelselectionresult);
             this.Controls.Add(this.label3);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox9);
-            this.Controls.Add(this.listBox2);
-            this.Controls.Add(this.continueBtn);
-            this.Controls.Add(this.listBox1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.dateTimePicker2);
+            this.Controls.Add(this.listBox1);
+            this.Controls.Add(this.btnUndoSelection);
+            this.Controls.Add(this.btnConfirmSelection);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.dateTimePicker1);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.listBox2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.KeyPreview = true;
             this.Name = "Form1";
@@ -399,7 +490,6 @@ namespace Berichtsheft
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -412,11 +502,9 @@ namespace Berichtsheft
         private System.Windows.Forms.DateTimePicker dateTimePicker2;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel panel2;
         private Button button2;
-        private PictureBox pictureBox1;
         private ListBox listBox2;
-        private Button continueBtn;
+        private Button btnConfirmSelection;
         private ListBox listBox1;
         private TextBox textBox9;
         private Button btnStep1;
@@ -425,13 +513,22 @@ namespace Berichtsheft
         private Button btnStep3;
         private Button btnStep2;
         private Label label1;
-        private Button button3;
+        private Button btnUndoSelection;
         private Label label2;
         private Label label3;
         private Button btnStep5;
         private Label labelselectionresult;
         private Label label4;
         private Label label5;
+        private Button btnNextMenu;
+        private Button btnPreviousMenu;
+        private Panel panel2;
+        private ComboBox comboBox1;
+        private Label lblComboBox1;
+        private Label label6;
+        private ComboBox comboBox2;
+        private Label label7;
+        private ComboBox comboBox3;
     }
 }
 

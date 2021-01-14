@@ -39,8 +39,6 @@ namespace Berichtsheft
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         public static extern bool ReleaseCapture();
-        //    ResourceWriter rw = new ResourceWriter(@".\Resources.resx");
-        //Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
         Document doc = null;
         bool documentopen;
         int year;
@@ -99,7 +97,7 @@ namespace Berichtsheft
                     PnlNav.Height = btnStep1.Height;
                     PnlNav.Top = btnStep1.Top;
                     PnlNav.Left = btnStep1.Left;
-                    continueBtn.Visible = false;
+                    btnConfirmSelection.Visible = false;
                     btnStep1.BackColor = Color.FromArgb(46, 51, 73);
                     btnStep2.BackColor = Color.FromArgb(24, 30, 54);
                     btnStep3.BackColor = Color.FromArgb(24, 30, 54);
@@ -108,9 +106,7 @@ namespace Berichtsheft
                     label4.Visible = false;
                     label5.Visible = false;
                     labelselectionresult.Visible = false;
-                    button3.Visible = false;
-
-
+                    btnUndoSelection.Visible = false;
                     break;
                 case 1:
 
@@ -135,11 +131,16 @@ namespace Berichtsheft
                     labelselectionresult.Text = "Ausgewählte Lesezeichen: ";
                     labelselectionresult.Visible = true;
                     label1.Text = labelstrings[0];
-                    continueBtn.Visible = true;
+                    btnConfirmSelection.Visible = true;
+                    if (whandler.allVariablesSet())
+                    {
+                        btnNextMenu.Enabled = true;
+                    }
                     foreach (String bm in whandler.Bookmarks)
                     {
                         listBox1.Items.Add(bm);
                     }
+
 
                     break;
                 case 2:
@@ -369,7 +370,7 @@ namespace Berichtsheft
                     whandler.Bmnummer = listBox2.Items[0].ToString();
                     listBox2.Items.Clear();
                     label1.Text = labelstrings[1];
-                    button3.Visible = true;
+                    btnUndoSelection.Visible = true;
                     labelselectionresult.Text = labelselectionresult.Text + "\nBerichtsheftnummer: " + whandler.Bmnummer;
                     break;
                 case 1:
@@ -388,8 +389,12 @@ namespace Berichtsheft
                     whandler.Bmausbildungsjahr = listBox2.Items[0].ToString();
                     listBox2.Items.Clear();
                     label1.Text = "Alle Lesezeichen ausgewählt";
-                    continueBtn.Visible = false;
+                    btnConfirmSelection.Visible = false;
                     labelselectionresult.Text = labelselectionresult.Text + "\nAusbildungsjahr: " + whandler.Bmwochestart;
+                    if (whandler.allVariablesSet())
+                    {
+                        btnNextMenu.Enabled = true;
+                    }
                     break;
             }
         }
@@ -410,7 +415,7 @@ namespace Berichtsheft
                         listBox1.Items.Add(listBox2.Items[0]);
                     }
                     label1.Text = labelstrings[0];
-                    button3.Visible = false;
+                    btnUndoSelection.Visible = false;
                     labelselectionresult.Text = labelselectionresult.Text.Substring(0, labelselectionresult.Text.LastIndexOf("\n"));
                     askingbm--;
 
@@ -455,7 +460,7 @@ namespace Berichtsheft
                         listBox1.Items.Add(listBox2.Items[0]);
                     }
                     label1.Text = labelstrings[3];
-                    continueBtn.Visible = true;
+                    btnConfirmSelection.Visible = true;
                     labelselectionresult.Text = labelselectionresult.Text.Substring(0, labelselectionresult.Text.LastIndexOf("\n"));
                     askingbm--;                   
                     break;
@@ -551,11 +556,7 @@ namespace Berichtsheft
             }
         }
 
-        private void pictureBox1_Click_1(object sender, EventArgs e)
-        {
-            openwordfile();
 
-        }
 
         private void button3_Click(object sender, EventArgs e)
         {
@@ -700,7 +701,7 @@ namespace Berichtsheft
             btnStep3.FlatAppearance.MouseDownBackColor = btnStep3.BackColor;
             btnStep3.BackColorChanged += (s, e) =>
             {
-                btnStep3.FlatAppearance.MouseOverBackColor = button3.BackColor;
+                btnStep3.FlatAppearance.MouseOverBackColor = btnUndoSelection.BackColor;
             };
             btnStep4.FlatAppearance.MouseOverBackColor = btnStep4.BackColor;
             btnStep4.FlatAppearance.MouseDownBackColor = btnStep4.BackColor;
@@ -715,6 +716,12 @@ namespace Berichtsheft
                 btnStep5.FlatAppearance.MouseOverBackColor = btnStep5.BackColor;
             };
         }
+
+        private void btnNextMenu_Click(object sender, EventArgs e)
+        {
+            alterstate(2);
+        }
+
     }
 
 
