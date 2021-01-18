@@ -63,6 +63,12 @@ namespace Berichtsheft
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.comboBox3 = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.comboBox4 = new System.Windows.Forms.ComboBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.comboBox5 = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.comboBox6 = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -397,6 +403,7 @@ namespace Berichtsheft
             // 
             // comboBox1
             // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(410, 120);
             this.comboBox1.Name = "comboBox1";
@@ -408,25 +415,26 @@ namespace Berichtsheft
             this.lblComboBox1.AutoSize = true;
             this.lblComboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblComboBox1.ForeColor = System.Drawing.Color.White;
-            this.lblComboBox1.Location = new System.Drawing.Point(239, 121);
+            this.lblComboBox1.Location = new System.Drawing.Point(260, 120);
             this.lblComboBox1.Name = "lblComboBox1";
-            this.lblComboBox1.Size = new System.Drawing.Size(96, 16);
+            this.lblComboBox1.Size = new System.Drawing.Size(125, 16);
             this.lblComboBox1.TabIndex = 30;
-            this.lblComboBox1.Text = "lblComboBox1";
+            this.lblComboBox1.Text = "Berichtsheftnummer";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.ForeColor = System.Drawing.Color.White;
-            this.label6.Location = new System.Drawing.Point(239, 148);
+            this.label6.Location = new System.Drawing.Point(266, 147);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(45, 16);
+            this.label6.Size = new System.Drawing.Size(119, 16);
             this.label6.TabIndex = 32;
-            this.label6.Text = "label6";
+            this.label6.Text = "Anfang der Woche";
             // 
             // comboBox2
             // 
+            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Location = new System.Drawing.Point(410, 147);
             this.comboBox2.Name = "comboBox2";
@@ -438,19 +446,80 @@ namespace Berichtsheft
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.Color.White;
-            this.label7.Location = new System.Drawing.Point(239, 175);
+            this.label7.Location = new System.Drawing.Point(276, 174);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(45, 16);
+            this.label7.Size = new System.Drawing.Size(109, 16);
             this.label7.TabIndex = 34;
-            this.label7.Text = "label7";
+            this.label7.Text = "Ende der Woche";
             // 
             // comboBox3
             // 
+            this.comboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox3.FormattingEnabled = true;
             this.comboBox3.Location = new System.Drawing.Point(410, 174);
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(121, 21);
             this.comboBox3.TabIndex = 33;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.ForeColor = System.Drawing.Color.White;
+            this.label8.Location = new System.Drawing.Point(281, 201);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(104, 16);
+            this.label8.TabIndex = 36;
+            this.label8.Text = "Ausbildungsjahr";
+            // 
+            // comboBox4
+            // 
+            this.comboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox4.FormattingEnabled = true;
+            this.comboBox4.Location = new System.Drawing.Point(410, 201);
+            this.comboBox4.Name = "comboBox4";
+            this.comboBox4.Size = new System.Drawing.Size(121, 21);
+            this.comboBox4.TabIndex = 35;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.ForeColor = System.Drawing.Color.White;
+            this.label9.Location = new System.Drawing.Point(281, 227);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(104, 16);
+            this.label9.TabIndex = 38;
+            this.label9.Text = "Name (optional)";
+            // 
+            // comboBox5
+            // 
+            this.comboBox5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox5.FormattingEnabled = true;
+            this.comboBox5.Location = new System.Drawing.Point(410, 227);
+            this.comboBox5.Name = "comboBox5";
+            this.comboBox5.Size = new System.Drawing.Size(121, 21);
+            this.comboBox5.TabIndex = 37;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.ForeColor = System.Drawing.Color.White;
+            this.label10.Location = new System.Drawing.Point(214, 255);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(171, 16);
+            this.label10.TabIndex = 40;
+            this.label10.Text = "Ausbildungsberuf (optional)";
+            // 
+            // comboBox6
+            // 
+            this.comboBox6.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox6.FormattingEnabled = true;
+            this.comboBox6.Location = new System.Drawing.Point(410, 254);
+            this.comboBox6.Name = "comboBox6";
+            this.comboBox6.Size = new System.Drawing.Size(121, 21);
+            this.comboBox6.TabIndex = 39;
             // 
             // Form1
             // 
@@ -458,6 +527,12 @@ namespace Berichtsheft
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(51)))), ((int)(((byte)(73)))));
             this.ClientSize = new System.Drawing.Size(951, 531);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.comboBox6);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.comboBox5);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.comboBox4);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.comboBox3);
             this.Controls.Add(this.label6);
@@ -529,6 +604,12 @@ namespace Berichtsheft
         private ComboBox comboBox2;
         private Label label7;
         private ComboBox comboBox3;
+        private Label label8;
+        private ComboBox comboBox4;
+        private Label label9;
+        private ComboBox comboBox5;
+        private Label label10;
+        private ComboBox comboBox6;
     }
 }
 

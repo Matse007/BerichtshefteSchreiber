@@ -24,15 +24,7 @@ namespace Berichtsheft
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
 
-
-        enum UIState
-        {
-            Dokumentwahl,
-            Dateneingabe,
-            Speichern,
-            Starten
-
-        }
+        List<ComboBox> comboBoxes = new List<ComboBox>();
 
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
@@ -46,6 +38,7 @@ namespace Berichtsheft
             "Bitte das Lesezeichen für den Anfang der Woche auswählen.",
             "Bitte das Lesezeichen für das Ende der Woche auswählen.",
              "Bitte das Lesezeichen für das Ausbildungsjahr auswählen."};
+
 
         List<string> bookmarks = new List<string>();
         WordHandler whandler = new WordHandler();
@@ -72,6 +65,7 @@ namespace Berichtsheft
 
         public Form1()
         {
+
             InitializeComponent();
             alterstate(0);
             documentopen = false;
@@ -81,6 +75,9 @@ namespace Berichtsheft
             dateTimePicker1.CustomFormat = "dd/MM/yyyy";
             dateTimePicker2.Format = DateTimePickerFormat.Custom;
             dateTimePicker2.CustomFormat = "dd/MM/yyyy";
+
+            comboBoxes.AddRange(this.Controls.OfType<ComboBox>().ToArray());
+
 
         }
 
@@ -136,9 +133,20 @@ namespace Berichtsheft
                     {
                         btnNextMenu.Enabled = true;
                     }
-                    foreach (String bm in whandler.Bookmarks)
+                    try
                     {
-                        listBox1.Items.Add(bm);
+                        foreach (ComboBox c in comboBoxes)
+                        {
+
+
+                            c.Items.AddRange(whandler.Bookmarks.ToArray());
+
+                        }
+                    }
+                    catch (System.NullReferenceException)
+                    {
+
+                        throw;
                     }
 
 
@@ -462,7 +470,7 @@ namespace Berichtsheft
                     label1.Text = labelstrings[3];
                     btnConfirmSelection.Visible = true;
                     labelselectionresult.Text = labelselectionresult.Text.Substring(0, labelselectionresult.Text.LastIndexOf("\n"));
-                    askingbm--;                   
+                    askingbm--;
                     break;
             }
         }
@@ -721,6 +729,7 @@ namespace Berichtsheft
         {
             alterstate(2);
         }
+
 
     }
 
