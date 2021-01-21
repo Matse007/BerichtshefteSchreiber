@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Resources;
 using Word = Microsoft.Office.Interop.Word;
+using System.Windows.Forms;
 
 namespace Berichtsheft
 {
@@ -24,11 +25,9 @@ namespace Berichtsheft
         bool documentopen { get; set; }
         private int year;
         List<string> bookmarks = new List<string>();
-        private DateTime date1;
-        private DateTime date2;
-        public DateTime Date1 { get => date1; set => date1 = value; }
-        public DateTime Date2 { get => date2; set => date2 = value; }
-        public string FolderName { get => folderName; set => folderName = value; }
+        public DateTime Date1 { get; set; }
+        public DateTime Date2 { get; set; }
+
         public int Year { get => year; set => year = value; }
         public List<string> Bookmarks { get => bookmarks; set => bookmarks = value; }
         private Document doc = null;
@@ -41,12 +40,17 @@ namespace Berichtsheft
         private string bmwocheende = null;
         public string Bmausbildungsjahr { get => bmausbildungsjahr; set => bmausbildungsjahr = value; }
         private string bmausbildungsjahr = null;
-
+        public string BmName { get; set; }
+        public string BmBerufsbezeichnung { get; set; }
+        public string Foldername { get; set; }
+        public string UserName { get; set; }
+        public string Berufsbezeichnung { get; set; }
+        private bool firstInizialization;
 
 
         //path where we save the file.
 
-        private string folderName;
+
 
         public void populateBookmarks()
         {
@@ -55,6 +59,7 @@ namespace Berichtsheft
             {
                 bookmarks.Add(bm.Name);
             }
+
         }
 
         public void openDocument()
@@ -62,112 +67,59 @@ namespace Berichtsheft
             doc = app.Documents.Open(str);
         }
 
-        public void everything()
+        public void writeDocuments()
         {
-            /**Creating a folder select window. I am asking for a folder to be selected where we will save the final "Berichtshefte". 
-             * I am using Windows CommonOpenFileDialog to make it look like a File Select window while still being able to uzilize it as a folder picker
-             * This is part of the Windows API Code Pack, imported through the NuGet Packet Manager.
-             * After successfully selecting a folder, the application continues with the following steps.
-             * 
-             **/
-            CommonOpenFileDialog folderdialog = new CommonOpenFileDialog();
-            folderdialog.Title = "Ordner zum Speichern der Berichtshefte wählen:";
-            folderdialog.InitialDirectory = "C:\\Users";
-            folderdialog.IsFolderPicker = true;
-            // Show the FolderBrowserDialog.
 
-            if (folderdialog.ShowDialog() == CommonFileDialogResult.Ok)
+           
+            int currentweek = GetIso8601WeekOfYear(Date1);
+            int BerichtNummer = 1;
+
+            year = Date1.Year;
+       
+
+            int WeeksInTotal = (int)GetWeeks(Date1, Date2);
+            Form1.setloadingBar(WeeksInTotal);
+            for (int i = BerichtNummer; i <= WeeksInTotal; i++)
             {
-                /// <value>folderName is saving the path where the user wants to save.
-                string folderName = folderdialog.FileName;
 
-                //Getting the date that was selected by the guy running the Programm
-                int currentweek = GetIso8601WeekOfYear(date1);
-                int BerichtNummer = 1;
 
-                year = date1.Year;
-                //Closing the doc in case it is already opened.
-                //str = dia.FileName;
-                doc = app.Documents.Open(str);
-                //Changing the bool to let us know we have a document opened.
-                documentopen = true;
-                //needed? Filenameonly1 = doc.FullName;
-                foreach (Bookmark bm in doc.Bookmarks)
+                WriteInBookmark(bmnummer, i.ToString());
+
+
+                WriteInBookmark(bmwochestart, Date1.ToString("d"));
+
+                // TODO: Datum vor der for schleife initializieren.
+                Date1 = Date1.AddDays(DaysUntilFriday(Date1));
+
+                WriteInBookmark(bmwocheende, Date1.ToString("d"));
+                WriteInBookmark(bmausbildungsjahr, AusbildungsJahr(i).ToString());
+                if (String.IsNullOrEmpty(BmName) == false)
                 {
-                    bookmarks.Add(bm.Name);
-
+                    WriteInBookmark(BmName, UserName.TrimStart().TrimEnd());
                 }
-                // int WeeksInTotal = (int)GetWeeks(weekstart, endtime);
+                if (String.IsNullOrEmpty(BmBerufsbezeichnung) == false)
+                {
+                    WriteInBookmark(BmBerufsbezeichnung,Berufsbezeichnung);
+                }
 
-                //Form2 selectnummer = new Form2(bookmarks, 0);
-                //selectnummer.Text = "Berichtsheftnummerierung:";
-                /* if (selectnummer.ShowDialog() == DialogResult.OK)
-                 {
-                     bmnummer = selectnummer.bmnummer;
-                     Form2 selectweekstart = new Form2(selectnummer.bmlist, 1);
-                     selectweekstart.Text = "Wochenstartlesezeichen:";
-                     if (selectweekstart.ShowDialog() == DialogResult.OK)
-                     {
-                         bmwochestart = selectweekstart.bmweekstart;
-                         Form2 selectweekend = new Form2(selectweekstart.bmlist, 2);
-                         selectweekend.Text = "Wochen:";
-                         if (selectweekend.ShowDialog() == DialogResult.OK)
-
-                         {
-                             bmwocheende = selectweekend.bmweekend;
-                             Form2 selectyear = new Form2(selectweekend.bmlist, 3);
-                             selectyear.Text = "Jahrlesezeichen:";
-
-                             if (selectyear.ShowDialog() == DialogResult.OK)
-                             {
-                                 bmausbildungsjahr = selectyear.bmjahr;
-
-
-
-                                 // System.Console.WriteLine(currentweek);
-                                 // MessageBox.Show(str);
-                                 //MessageBox.Show(doc.Bookmarks.ToString());          
-
-                                 //Checks how many days are left till monday. Currently ignores the fact if its already monday, need to fix that.
-                                 //MessageBox.Show(DaysUntilMonday(weekstart).ToString());
-
-
-                                 /*   Add all bookmarks
-                                  * @TODO: Read in names 
-                                  *
-                                 for (int i = BerichtNummer; i <= WeeksInTotal; i++)
-                                 {
-                                     WriteInBookmark(bmnummer, i.ToString());
-                                     WriteInBookmark(bmwochestart, date1.ToString("d"));
-                                     // TODO: Datum vor der for schleife initializieren.
-                                     date1 = date1.AddDays(DaysUntilFriday(date1));
-                                     WriteInBookmark(bmwocheende, date1.ToString("d"));
-                                     WriteInBookmark(bmausbildungsjahr, AusbildungsJahr(i).ToString());
-
-
-
-                                     // StripFilePath(str, filenameonly);
-                                     //  MessageBox.Show(SaveFileName(BerichtNummer, "Matthias", "Tobin", currentweek, year.ToString()));
-                                     doc.SaveAs2(folderName + "\\" + SaveFileName(i, "Matthias", "Tobin", currentweek, year.ToString(), AusbildungsJahr(i)));
-                                     date1 = date1.AddDays(DaysUntilMonday(date1));
-                                     currentweek = GetIso8601WeekOfYear(date1);
-                                     year = date1.Year;
-
-                                 }
-                                 doc.Close();
-                                 app.Quit();
-
-
-
-                             }
-                         }
-                     }*/
+        
+                Form1.changelabel("Schreibe " + SaveFileName(i, UserName, currentweek, year.ToString(), AusbildungsJahr(i)));
+                doc.SaveAs2(Foldername + "\\" + SaveFileName(i, UserName, currentweek, year.ToString(), AusbildungsJahr(i)));
+                Date1 = Date1.AddDays(DaysUntilMonday(Date1));
+                currentweek = GetIso8601WeekOfYear(Date1);
+                year = Date1.Year;
+                Form1.increaseLoadingProgress();
             }
+            Form1.changelabel("Fertig!");
+           
+
+
+
+
+
+
 
         }
-
-
-
 
         public static int GetIso8601WeekOfYear(DateTime time)
         {
@@ -185,25 +137,16 @@ namespace Berichtsheft
         }
 
         //Returns the final savename. 
-        private string SaveFileName(int iterator, string firstname, string lastname, int kalenderwoche, string year, int ausbildungsjahr)
+        private string SaveFileName(int iterator, string name, int kalenderwoche, string year, int ausbildungsjahr)
         {
-            string finalsavefilename = iterator + ".Berichtsheft_" + firstname + "_" + lastname + "_" + year + "_KW_" + kalenderwoche + "_00" + ausbildungsjahr + ".docx";
+            string[] sub = name.Split(' ');
+            string seperatedname = String.Join("_", sub);
+            string finalsavefilename = iterator + ".Berichtsheft_" + seperatedname + "_" + year + "_KW_" + kalenderwoche + "_00" + ausbildungsjahr + ".docx";
 
             return finalsavefilename;
 
         }
-        public bool allVariablesSet()
-        {
-            if (String.IsNullOrEmpty(bmnummer) || String.IsNullOrEmpty(bmausbildungsjahr) || String.IsNullOrEmpty(bmwochestart)
-                || String.IsNullOrEmpty(bmwocheende))
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
+   
         public void CloseWord(char yes)
         {
             if (doc == null)
@@ -257,16 +200,29 @@ namespace Berichtsheft
 
         private int DaysUntilFriday(DateTime currentdate)
         {
-            return (((int)DayOfWeek.Friday) - ((int)currentdate.DayOfWeek) + 7) % 7;
+            if (firstInizialization)
+            {
+                if (((((int)DayOfWeek.Friday) - ((int)currentdate.DayOfWeek) + 7) % 7) != 0)
+                {
+                    firstInizialization = false;
+                    return (((int)DayOfWeek.Friday) - ((int)currentdate.DayOfWeek) + 7) % 7;
+
+                }
+                else
+                {
+                    firstInizialization = false;
+                    return 0;
+                }
+            }
+            else
+            {
+                return (((int)DayOfWeek.Friday) - ((int)currentdate.DayOfWeek) + 7) % 7;
+            }
 
         }
 
 
-        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
-        {
 
-
-        }
 
         private void WriteInBookmark(string lesezeichen, string inhalt)
         {
@@ -299,14 +255,6 @@ namespace Berichtsheft
 
 
         }
-
-        private int AmountOfWeeksInTotal(DateTime start, DateTime ende)
-        {
-            int weeks = (int)GetWeeks(start, ende);
-            return weeks;
-
-        }
-
         /**Function to get the total amount of weeks. In case it is not a full 
          * 
          */

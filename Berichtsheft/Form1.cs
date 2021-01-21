@@ -24,16 +24,25 @@ namespace Berichtsheft
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
 
+        int currentstate;
         List<ComboBox> comboBoxes = new List<ComboBox>();
-
-
+        List<Control> state1controls = new List<Control>();
+        List<Control> state2controls = new List<Control>();
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         public static extern bool ReleaseCapture();
         Document doc = null;
-        bool documentopen;
+
         int year;
+        private bool datetimepicker1_changed;
+        private bool datetimepicker2_changed;
+        private bool comboBox1set;
+        private bool comboBox2set;
+        private bool comboBox3set;
+        private bool comboBox4set;
+        private bool firsttimeallboxesset = true;
+
         string[] labelstrings = {"Bitte das Lesezeichen für die Berichtsheftnummer auswählen.",
             "Bitte das Lesezeichen für den Anfang der Woche auswählen.",
             "Bitte das Lesezeichen für das Ende der Woche auswählen.",
@@ -42,8 +51,9 @@ namespace Berichtsheft
 
         List<string> bookmarks = new List<string>();
         WordHandler whandler = new WordHandler();
+        public static ProgressBar[] prgbar = new ProgressBar[1];
+        public static Label[] lbl = new Label[1];
         //Variable for looking at what step we are for the bookmark questioning.
-        int askingbm = 0;
         // This presumes that weeks start with Monday.
         // Week 1 is the 1st week of the year with a Thursday in it.
         public static int GetIso8601WeekOfYear(DateTime time)
@@ -67,18 +77,19 @@ namespace Berichtsheft
         {
 
             InitializeComponent();
-            alterstate(0);
-            documentopen = false;
-            listBox1.AllowDrop = true;
-            listBox2.AllowDrop = true;
-            dateTimePicker1.Format = DateTimePickerFormat.Custom;
-            dateTimePicker1.CustomFormat = "dd/MM/yyyy";
-            dateTimePicker2.Format = DateTimePickerFormat.Custom;
-            dateTimePicker2.CustomFormat = "dd/MM/yyyy";
+
+
 
             comboBoxes.AddRange(this.Controls.OfType<ComboBox>().ToArray());
-
-
+            state1controls.AddRange(comboBoxes.ToArray());
+            foreach (Label l in this.Controls.OfType<Label>().Where(l => l.Name.EndsWith("Combo")))
+            {
+                state1controls.Add(l);
+            }
+            state2controls.AddRange(new List<Control> { lblAusbildungsstartDate, lblAusbildungsendeDate, dateTimePicker1, dateTimePicker2, lblNameText, lblBerufTextBox, textBox1, textBox2 });
+            prgbar[0] = progressBar1;
+            lbl[0] = label1;
+            alterstate(0);
         }
 
         private void alterstate(int state)
@@ -90,28 +101,27 @@ namespace Berichtsheft
                 case 0:
                     dateTimePicker1.Visible = false;
                     dateTimePicker2.Visible = false;
-                    listBox1.Visible = false;
                     PnlNav.Height = btnStep1.Height;
                     PnlNav.Top = btnStep1.Top;
                     PnlNav.Left = btnStep1.Left;
-                    btnConfirmSelection.Visible = false;
+
                     btnStep1.BackColor = Color.FromArgb(46, 51, 73);
                     btnStep2.BackColor = Color.FromArgb(24, 30, 54);
                     btnStep3.BackColor = Color.FromArgb(24, 30, 54);
-                    label1.Visible = false;
+
                     label3.Visible = false;
-                    label4.Visible = false;
-                    label5.Visible = false;
-                    labelselectionresult.Visible = false;
-                    btnUndoSelection.Visible = false;
+                    foreach (Control c in state1controls)
+                    {
+                        c.Visible = false;
+                    }
+                    currentstate = 0;
                     break;
                 case 1:
 
                     whandler.populateBookmarks();
                     dateTimePicker1.Visible = false;
                     dateTimePicker2.Visible = false;
-                    listBox1.Visible = true;
-                    listBox2.Visible = true;
+
                     PnlNav.Height = btnStep2.Height;
                     PnlNav.Top = btnStep2.Top;
                     PnlNav.Left = btnStep2.Left;
@@ -119,28 +129,24 @@ namespace Berichtsheft
                     btnStep1.BackColor = Color.FromArgb(24, 30, 54);
                     btnStep3.BackColor = Color.FromArgb(24, 30, 54);
                     btnStep2.BackColor = Color.FromArgb(46, 51, 73);
-                    listBox1.Items.Clear();
-                    listBox2.Items.Clear();
-                    label1.Visible = true;
+
                     label3.Visible = true;
-                    label4.Visible = true;
-                    label5.Visible = true;
-                    labelselectionresult.Text = "Ausgewählte Lesezeichen: ";
-                    labelselectionresult.Visible = true;
-                    label1.Text = labelstrings[0];
-                    btnConfirmSelection.Visible = true;
-                    if (whandler.allVariablesSet())
-                    {
-                        btnNextMenu.Enabled = true;
-                    }
+
                     try
                     {
                         foreach (ComboBox c in comboBoxes)
                         {
 
-
+                            c.Items.Clear();
+                            c.Items.Add("");
                             c.Items.AddRange(whandler.Bookmarks.ToArray());
 
+
+                        }
+                        foreach (Control c in state1controls)
+                        {
+                            c.Visible = true;
+                            c.Enabled = true;
                         }
                     }
                     catch (System.NullReferenceException)
@@ -149,13 +155,15 @@ namespace Berichtsheft
                         throw;
                     }
 
-
+                    currentstate = 1;
                     break;
                 case 2:
+                    dateTimePicker1.CustomFormat = " ";
+                    dateTimePicker1.Format = DateTimePickerFormat.Custom;
+                    dateTimePicker2.CustomFormat = " ";
+                    dateTimePicker2.Format = DateTimePickerFormat.Custom;
                     dateTimePicker1.Visible = true;
                     dateTimePicker2.Visible = true;
-                    listBox1.Visible = false;
-                    listBox2.Visible = false;
                     PnlNav.Height = btnStep3.Height;
                     PnlNav.Top = btnStep3.Top;
                     PnlNav.Left = btnStep3.Left;
@@ -163,13 +171,26 @@ namespace Berichtsheft
                     btnStep1.BackColor = Color.FromArgb(24, 30, 54);
                     btnStep2.BackColor = Color.FromArgb(24, 30, 54);
                     btnStep3.BackColor = Color.FromArgb(46, 51, 73);
-                    label1.Visible = false;
                     label3.Visible = false;
-                    label4.Visible = false;
-                    label5.Visible = false;
-                    labelselectionresult.Visible = false;
-                    button1.Enabled = false;
+
+                    foreach (Control c in state2controls)
+                    {
+
+                        c.Visible = true;
+                    }
+
+                    currentstate = 2;
                     break;
+                case 3:
+                    PnlNav.Height = btnStep4.Height;
+                    PnlNav.Top = btnStep4.Top;
+                    PnlNav.Left = btnStep4.Left;
+                    btnStep1.BackColor = Color.FromArgb(24, 30, 54);
+                    btnStep3.BackColor = Color.FromArgb(24, 30, 54);
+                    btnStep2.BackColor = Color.FromArgb(24, 30, 54);
+                    btnStep4.BackColor = Color.FromArgb(46, 51, 73);
+                    break;
+
 
 
             }
@@ -182,6 +203,7 @@ namespace Berichtsheft
                 closeProgramm();
             }
         }
+
 
         /*IMPORTANT FOR LATER
          * 
@@ -211,303 +233,8 @@ namespace Berichtsheft
         private void button1_Click(object sender, EventArgs e)
         {
             openwordfile();
-            /**Creating a folder select window. I am asking for a folder to be selected where we will save the final "Berichtshefte". 
-             * I am using Windows CommonOpenFileDialog to make it look like a File Select window while still being able to uzilize it as a folder picker
-             * This is part of the Windows API Code Pack, imported through the NuGet Packet Manager.
-             * After successfully selecting a folder, the application continues with the following steps.
-             */
-
-
-            //year = dateTimePicker1.Value.Year;
-            //Closing the doc in case it is already opened.
-            //str = dia.FileName;
-            //doc = app.Documents.Open(str);
-            //Changing the bool to let us know we have a document opened.
-            //documentopen = true;
-            /* foreach (Bookmark bm in doc.Bookmarks)
-             {
-                 bookmarks.Add(bm.Name);
-
-             }
-             //SHIFT FUNCTIONALITY
-             int WeeksInTotal = (int)GetWeeks(weekstart, endtime);
-
-             Form2 selectnummer = new Form2(bookmarks, 0);
-             selectnummer.Text = "Berichtsheftnummerierung:";
-             if (selectnummer.ShowDialog() == DialogResult.OK)
-             {
-                 bmnummer = selectnummer.bmnummer;
-                 Form2 selectweekstart = new Form2(selectnummer.bmlist, 1);
-                 selectweekstart.Text = "Wochenstartlesezeichen:";
-                 if (selectweekstart.ShowDialog() == DialogResult.OK)
-                 {
-                     bmwochestart = selectweekstart.bmweekstart;
-                     Form2 selectweekend = new Form2(selectweekstart.bmlist, 2);
-                     selectweekend.Text = "Wochen:";
-                     if (selectweekend.ShowDialog() == DialogResult.OK)
-
-                     {
-                         bmwocheende = selectweekend.bmweekend;
-                         Form2 selectyear = new Form2(selectweekend.bmlist, 3);
-                         selectyear.Text = "Jahrlesezeichen:";
-
-                         if (selectyear.ShowDialog() == DialogResult.OK)
-                         {
-                             bmausbildungsjahr = selectyear.bmjahr;
-
-
-
-                             // System.Console.WriteLine(currentweek);
-                             // MessageBox.Show(str);
-                             //MessageBox.Show(doc.Bookmarks.ToString());          
-
-                             //Checks how many days are left till monday. Currently ignores the fact if its already monday, need to fix that.
-                             //MessageBox.Show(DaysUntilMonday(weekstart).ToString());
-
-
-                             /*   Add all bookmarks
-                              * @TODO: Read in names 
-                              *
-                             for (int i = BerichtNummer; i <= WeeksInTotal; i++)
-                             {
-                                 WriteInBookmark(bmnummer, i.ToString());
-                                 WriteInBookmark(bmwochestart, date1.ToString("d"));
-                                 // TODO: Datum vor der for schleife initializieren.
-                                 date1 = date1.AddDays(DaysUntilFriday(date1));
-                                 WriteInBookmark(bmwocheende, date1.ToString("d"));
-                                 WriteInBookmark(bmausbildungsjahr, AusbildungsJahr(i).ToString());
-
-
-
-                                 // StripFilePath(str, filenameonly);
-                                 //  MessageBox.Show(SaveFileName(BerichtNummer, "Matthias", "Tobin", currentweek, year.ToString()));
-                                 doc.SaveAs2(folderName + "\\" + SaveFileName(i, "Matthias", "Tobin", currentweek, year.ToString(), AusbildungsJahr(i)));
-                                 date1 = date1.AddDays(DaysUntilMonday(date1));
-                                 currentweek = GetIso8601WeekOfYear(date1);
-                                 year = date1.Year;
-
-                             }
-                             doc.Close();
-                             app.Quit();
-
-
-
-                         }
-                     }
-                 }
-             }*/
-
+           
         }
-
-
-
-
-        //attempt to strip the filename from the path. Not working properly yet
-
-
-        //Returns the final savename. 
-        private string SaveFileName(int iterator, string firstname, string lastname, int kalenderwoche, string year, int ausbildungsjahr)
-        {
-            string finalsavefilename = iterator + ".Berichtsheft_" + firstname + "_" + lastname + "_" + year + "_KW_" + kalenderwoche + "_00" + ausbildungsjahr + ".docx";
-
-            return finalsavefilename;
-
-        }
-
-        private int DaysUntilMonday(DateTime currentdate)
-        {
-            if (((((int)DayOfWeek.Monday) - ((int)currentdate.DayOfWeek) + 7) % 7) != 0)
-            {
-                return (((int)DayOfWeek.Monday) - ((int)currentdate.DayOfWeek) + 7) % 7;
-            }
-            else
-            {
-                return 7;
-            }
-
-        }
-
-        /*Calculates the days until the next friday.
-         */
-
-        private int DaysUntilFriday(DateTime currentdate)
-        {
-            return (((int)DayOfWeek.Friday) - ((int)currentdate.DayOfWeek) + 7) % 7;
-
-        }
-
-
-
-        private void WriteInBookmark(string lesezeichen, string inhalt)
-        {
-            string bookmark = lesezeichen;
-            Bookmark bm = doc.Bookmarks[bookmark];
-            Range range = bm.Range;
-            range.Text = inhalt;
-            doc.Bookmarks.Add(bookmark, range);
-
-        }
-        private int AusbildungsJahr(int NachweisNummer)
-        {
-            if (NachweisNummer < 53)
-            {
-                return 1;
-            }
-            else if (NachweisNummer > 52 && NachweisNummer < 105)
-            {
-                return 2;
-
-            }
-            else if (NachweisNummer > 104)
-            {
-                return 3;
-            }
-            else
-            {
-                return 0;
-            }
-
-
-        }
-
-        private void writebmtowhandler(int state)
-        {
-            switch (state)
-            {
-                case 0:
-                    whandler.Bmnummer = listBox2.Items[0].ToString();
-                    listBox2.Items.Clear();
-                    label1.Text = labelstrings[1];
-                    btnUndoSelection.Visible = true;
-                    labelselectionresult.Text = labelselectionresult.Text + "\nBerichtsheftnummer: " + whandler.Bmnummer;
-                    break;
-                case 1:
-                    whandler.Bmwochestart = listBox2.Items[0].ToString();
-                    listBox2.Items.Clear();
-                    label1.Text = labelstrings[2];
-                    labelselectionresult.Text = labelselectionresult.Text + "\nWochenstart: " + whandler.Bmwochestart;
-                    break;
-                case 2:
-                    whandler.Bmwocheende = listBox2.Items[0].ToString();
-                    listBox2.Items.Clear();
-                    label1.Text = labelstrings[3];
-                    labelselectionresult.Text = labelselectionresult.Text + "\nEnde der Woche: " + whandler.Bmwocheende;
-                    break;
-                case 3:
-                    whandler.Bmausbildungsjahr = listBox2.Items[0].ToString();
-                    listBox2.Items.Clear();
-                    label1.Text = "Alle Lesezeichen ausgewählt";
-                    btnConfirmSelection.Visible = false;
-                    labelselectionresult.Text = labelselectionresult.Text + "\nAusbildungsjahr: " + whandler.Bmwochestart;
-                    if (whandler.allVariablesSet())
-                    {
-                        btnNextMenu.Enabled = true;
-                    }
-                    break;
-            }
-        }
-        private void undowritingbmhandler(int state)
-        {
-            switch (state)
-            {
-                case 0:
-                    break;
-                case 1:
-                    if (whandler.Bmnummer != null)
-                    {
-                        listBox1.Items.Add(whandler.Bmnummer);
-                        whandler.Bmnummer = null;
-                    }
-                    if (listBox2.Items.Count != 0)
-                    {
-                        listBox1.Items.Add(listBox2.Items[0]);
-                    }
-                    label1.Text = labelstrings[0];
-                    btnUndoSelection.Visible = false;
-                    labelselectionresult.Text = labelselectionresult.Text.Substring(0, labelselectionresult.Text.LastIndexOf("\n"));
-                    askingbm--;
-
-
-                    break;
-                case 2:
-                    if (whandler.Bmwochestart != null)
-                    {
-                        listBox1.Items.Add(whandler.Bmwochestart);
-                        whandler.Bmwochestart = null;
-                    }
-                    if (listBox2.Items.Count != 0)
-                    {
-                        listBox1.Items.Add(listBox2.Items[0]);
-                    }
-                    label1.Text = labelstrings[1];
-                    labelselectionresult.Text = labelselectionresult.Text.Substring(0, labelselectionresult.Text.LastIndexOf("\n"));
-                    askingbm--;
-                    break;
-                case 3:
-                    if (whandler.Bmwocheende != null)
-                    {
-                        listBox1.Items.Add(whandler.Bmwocheende);
-                        whandler.Bmwocheende = null;
-                    }
-                    if (listBox2.Items.Count != 0)
-                    {
-                        listBox1.Items.Add(listBox2.Items[0]);
-                    }
-                    label1.Text = labelstrings[2];
-                    labelselectionresult.Text = labelselectionresult.Text.Substring(0, labelselectionresult.Text.LastIndexOf("\n"));
-                    askingbm--;
-                    break;
-                case 4:
-                    if (whandler.Bmausbildungsjahr != null)
-                    {
-                        listBox1.Items.Add(whandler.Bmausbildungsjahr);
-                        whandler.Bmausbildungsjahr = null;
-                    }
-                    if (listBox2.Items.Count != 0)
-                    {
-                        listBox1.Items.Add(listBox2.Items[0]);
-                    }
-                    label1.Text = labelstrings[3];
-                    btnConfirmSelection.Visible = true;
-                    labelselectionresult.Text = labelselectionresult.Text.Substring(0, labelselectionresult.Text.LastIndexOf("\n"));
-                    askingbm--;
-                    break;
-            }
-        }
-        private int AmountOfWeeksInTotal(DateTime start, DateTime ende)
-        {
-            int weeks = (int)GetWeeks(start, ende);
-            return weeks;
-
-        }
-
-        /**Function to get the total amount of weeks. In case it is not a full 
-         * 
-         */
-        private decimal GetWeeks(DateTime start, DateTime end)
-        {
-            start = GetStartOfWeek(start);
-            end = GetStartOfWeek(end).AddDays(6);
-            decimal days = (int)(end - start).TotalDays;
-            int result = DateTime.Compare(start, end);
-            if (result > 0 && days == 0)
-            {
-                return 1;
-            }
-            else
-            {
-                return Math.Ceiling((days / 7));
-            }
-        }
-
-
-        private DateTime GetStartOfWeek(DateTime input)
-        {
-            int dayofWeek = (((int)input.DayOfWeek) + 6) % 7;
-            return input.Date.AddDays(-dayofWeek);
-
-        }
-
 
 
         private void Form1_Load(object sender, EventArgs e)
@@ -566,30 +293,7 @@ namespace Berichtsheft
 
 
 
-        private void button3_Click(object sender, EventArgs e)
-        {
 
-            if (listBox2.Items.Count == 0)
-            {
-                if (labelstrings.Any(x => label1.Text.EndsWith(x)) && label1.Text.StartsWith("Keine Auswahl wurde getroffen!"))
-                {
-                    //Alles bleibt so wie es ist 
-
-                    label1.Text = label1.Text;
-
-                }
-                else
-                {
-                    label1.Text = "Keine Auswahl wurde getroffen! " + label1.Text;
-                }
-            }
-            else if (listBox2.Items.Count == 1)
-            {
-                writebmtowhandler(askingbm);
-                askingbm++;
-
-            }
-        }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
         {
@@ -641,56 +345,7 @@ namespace Berichtsheft
 
         }
 
-        private void listBox2_DragEnter(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.Text))
-            {
-                e.Effect = DragDropEffects.Copy;
-            }
-            else
-            {
-                e.Effect = DragDropEffects.None;
-            }
 
-        }
-
-
-        private void listBox2_DragDrop(object sender, DragEventArgs e)
-        {
-            if (listBox2.Items.Count == 0)
-            {
-                listBox2.Items.Add(e.Data.GetData(DataFormats.Text));
-                listBox1.Items.Remove(e.Data.GetData(DataFormats.Text));
-            }
-            else
-            {
-                listBox1.Items.Add(listBox2.Items[0]);
-                listBox2.Items.Remove(listBox2.Items[0]);
-                listBox2.Items.Add(e.Data.GetData(DataFormats.Text));
-                listBox1.Items.Remove(e.Data.GetData(DataFormats.Text));
-            }
-        }
-
-        private void listBox_MouseDown(object sender, MouseEventArgs e)
-        {
-            try
-            {
-                listBox2.DoDragDrop(listBox1.SelectedItem.ToString(), DragDropEffects.Copy);
-            }
-            catch (System.NullReferenceException)
-            {
-
-                throw;
-            }
-        }
-
-        private void button3_Click_1(object sender, EventArgs e)
-        {
-
-            undowritingbmhandler(askingbm);
-
-
-        }
         private void buttondesigner()
         {
             btnStep1.FlatAppearance.MouseOverBackColor = btnStep1.BackColor;
@@ -709,7 +364,7 @@ namespace Berichtsheft
             btnStep3.FlatAppearance.MouseDownBackColor = btnStep3.BackColor;
             btnStep3.BackColorChanged += (s, e) =>
             {
-                btnStep3.FlatAppearance.MouseOverBackColor = btnUndoSelection.BackColor;
+                btnStep3.FlatAppearance.MouseOverBackColor = btnStep3.BackColor;
             };
             btnStep4.FlatAppearance.MouseOverBackColor = btnStep4.BackColor;
             btnStep4.FlatAppearance.MouseDownBackColor = btnStep4.BackColor;
@@ -725,12 +380,214 @@ namespace Berichtsheft
             };
         }
 
-        private void btnNextMenu_Click(object sender, EventArgs e)
+
+        private void comboBox6_DropDownClosed(object sender, EventArgs e)
         {
-            alterstate(2);
+            if (comboBoxFilled(comboBox6) == false)
+            {
+                textBox2.Enabled = false;
+                textBox2.BackColor = Color.FromArgb(128, 128, 128);
+                lblBerufTextBox.ForeColor = Color.FromArgb(128, 128, 128);
+
+            }
+            else
+            {
+                textBox2.Enabled = true;
+                textBox2.BackColor = Color.FromArgb(255, 255, 255);
+                lblBerufTextBox.ForeColor = Color.FromArgb(255, 255, 255);
+
+            }
         }
 
+        private void dateTimePicker2_ValueChanged(object sender, EventArgs e)
+        {
+            dateTimePicker2.CustomFormat = "dd/MM/yyyy";
+            datetimepicker2_changed = true;
+            datesAndTextSet();
+        }
 
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
+            dateTimePicker1.CustomFormat = "dd/MM/yyyy";
+            datetimepicker1_changed = true;
+            datesAndTextSet();
+        }
+        private void datesAndTextSet()
+        {
+            if (datetimepicker1_changed && datetimepicker2_changed && String.IsNullOrEmpty(textBox1.Text) == false)
+            {
+                button3.Visible = true;
+                button3.Enabled = true;
+                alterstate(3);
+            }
+            else
+            {
+                button3.Enabled = false;
+            }
+        }
+
+        private void comboBox1_DropDownClosed(object sender, EventArgs e)
+        {
+            if (comboBoxFilled(comboBox1))
+            {
+                comboBox1set = true;
+                button3.Enabled = true;
+
+            }
+            else
+            {
+                comboBox1set = false;
+                button3.Enabled = false;
+            }
+            checkComboBoxes();
+
+        }
+        private void checkComboBoxes()
+        {
+
+            if (comboBox1set && comboBox2set && comboBox3set && comboBox4set && firsttimeallboxesset)
+            {
+                alterstate(2);
+                firsttimeallboxesset = false;
+            }
+        }
+
+        private void comboBox2_DropDownClosed(object sender, EventArgs e)
+        {
+            if (comboBoxFilled(comboBox2))
+            {
+                comboBox2set = true;
+                button3.Enabled = true;
+
+            }
+            else
+            {
+                comboBox2set = false;
+                button3.Enabled = false;
+            }
+            checkComboBoxes();
+        }
+
+        private void comboBox3_DropDownClosed(object sender, EventArgs e)
+        {
+            if (comboBoxFilled(comboBox3))
+            {
+                comboBox3set = true;
+                button3.Enabled = true;
+
+            }
+            else
+            {
+                comboBox3set = false;
+                button3.Enabled = false;
+            }
+            checkComboBoxes();
+        }
+
+        private void comboBox4_DropDownClosed(object sender, EventArgs e)
+        {
+            if (comboBoxFilled(comboBox4))
+            {
+                comboBox4set = true;
+                button3.Enabled = true;
+
+            }
+            else
+            {
+                comboBox4set = false;
+                button3.Enabled = false;
+            }
+            checkComboBoxes();
+
+        }
+        private bool comboBoxFilled(ComboBox cmbBox)
+        {
+            try
+            {
+                if (cmbBox.SelectedIndex < 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    if (String.IsNullOrEmpty(cmbBox.SelectedItem.ToString()))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (System.NullReferenceException error)
+            {
+                throw new ArgumentOutOfRangeException("oops", "Product Number" + error);
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            datesAndTextSet();
+        }
+        public static void setloadingBar(int max)
+        {
+            prgbar[0].Maximum = max;
+        }
+        public static void increaseLoadingProgress()
+        {
+
+            prgbar[0].Value++;
+        }
+        public static void changelabel(string text)
+        {
+            lbl[0].Text = text;
+            lbl[0].Refresh();
+        }
+        private void button3_Click(object sender, EventArgs e)
+        {
+            whandler.Bmnummer = comboBox1.SelectedItem.ToString();
+            whandler.Bmwochestart = comboBox2.SelectedItem.ToString();
+            whandler.Bmwocheende = comboBox3.SelectedItem.ToString();
+            whandler.Bmausbildungsjahr = comboBox4.SelectedItem.ToString();
+            if (comboBoxFilled(comboBox5))
+            {
+                whandler.BmName = comboBox5.SelectedItem.ToString();
+            }
+            if (comboBoxFilled(comboBox6))
+            {
+                whandler.BmBerufsbezeichnung = comboBox6.SelectedItem.ToString();
+            }
+
+            whandler.UserName = textBox1.Text;
+            whandler.Berufsbezeichnung = textBox2.Text;
+            whandler.Date1 = dateTimePicker1.Value.Date;
+            whandler.Date2 = dateTimePicker2.Value.Date;
+            /**Creating a folder select window. I am asking for a folder to be selected where we will save the final "Berichtshefte". 
+             * I am using Windows CommonOpenFileDialog to make it look like a File Select window while still being able to uzilize it as a folder picker
+             * This is part of the Windows API Code Pack, imported through the NuGet Packet Manager.
+             * After successfully selecting a folder, the application continues with the following steps.
+             * 
+             */
+            CommonOpenFileDialog folderdialog = new CommonOpenFileDialog();
+            folderdialog.Title = "Ordner zum Speichern der Berichtshefte wählen:";
+            folderdialog.InitialDirectory = "C:\\Users";
+            folderdialog.IsFolderPicker = true;
+
+
+
+            if (folderdialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                label1.Visible = true;
+                changelabel("Starte...");
+                progressBar1.Visible = true;
+                whandler.Foldername = folderdialog.FileName;
+                whandler.writeDocuments();
+            }
+
+
+
+        }
     }
 
 
