@@ -95,7 +95,7 @@ namespace Berichtsheft
                 WriteInBookmark(bmausbildungsjahr, AusbildungsJahr(i).ToString());
                 if (String.IsNullOrEmpty(BmName) == false)
                 {
-                    WriteInBookmark(BmName, UserName.TrimStart().TrimEnd());
+                    WriteInBookmark(BmName, UserName.TrimStart(' ').TrimEnd(' '));
                 }
                 if (String.IsNullOrEmpty(BmBerufsbezeichnung) == false)
                 {
@@ -103,8 +103,8 @@ namespace Berichtsheft
                 }
 
         
-                Form1.changelabel("Schreibe " + SaveFileName(i, UserName, currentweek, year.ToString(), AusbildungsJahr(i)));
-                doc.SaveAs2(Foldername + "\\" + SaveFileName(i, UserName, currentweek, year.ToString(), AusbildungsJahr(i)));
+                Form1.changelabel("Schreibe " + SaveFileName(i, UserName.TrimStart(' ').TrimEnd(' '), currentweek, year.ToString(), AusbildungsJahr(i)));
+                doc.SaveAs2(Foldername + "\\" + SaveFileName(i, UserName.TrimStart(' ').TrimEnd(' '), currentweek, year.ToString(), AusbildungsJahr(i)));
                 Date1 = Date1.AddDays(DaysUntilMonday(Date1));
                 currentweek = GetIso8601WeekOfYear(Date1);
                 year = Date1.Year;

@@ -583,6 +583,15 @@ namespace Berichtsheft
                 progressBar1.Visible = true;
                 whandler.Foldername = folderdialog.FileName;
                 whandler.writeDocuments();
+                DialogResult result1 = MessageBox.Show("Programm wurde erfolgreich ausgeführt.\nDas Programm wird nun beendet.","Information",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (result1 == DialogResult.OK)
+                {
+                    whandler.CloseWord('y');
+                    System.Windows.Forms.Application.Exit();
+                }
+
+
             }
 
 
