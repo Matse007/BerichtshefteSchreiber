@@ -59,35 +59,5 @@ namespace Berichtsheft.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap WinWordLogoSmall_scale_140 {
-            get {
-                object obj = ResourceManager.GetObject("WinWordLogoSmall.scale-140", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap WinWordLogoSmall_scale_180 {
-            get {
-                object obj = ResourceManager.GetObject("WinWordLogoSmall.scale-180", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap WinWordLogoSmall_scale_80 {
-            get {
-                object obj = ResourceManager.GetObject("WinWordLogoSmall.scale-80", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
     }
 }
