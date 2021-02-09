@@ -48,9 +48,6 @@ namespace Berichtsheft
         private bool firstInizialization;
 
 
-        //path where we save the file.
-
-
 
         public void populateBookmarks()
         {
@@ -70,12 +67,12 @@ namespace Berichtsheft
         public void writeDocuments()
         {
 
-           
+
             int currentweek = GetIso8601WeekOfYear(Date1);
             int BerichtNummer = 1;
 
             year = Date1.Year;
-       
+
 
             int WeeksInTotal = (int)GetWeeks(Date1, Date2);
             Form1.setloadingBar(WeeksInTotal);
@@ -99,10 +96,10 @@ namespace Berichtsheft
                 }
                 if (String.IsNullOrEmpty(BmBerufsbezeichnung) == false)
                 {
-                    WriteInBookmark(BmBerufsbezeichnung,Berufsbezeichnung);
+                    WriteInBookmark(BmBerufsbezeichnung, Berufsbezeichnung);
                 }
 
-        
+
                 Form1.changelabel("Schreibe " + SaveFileName(i, UserName.TrimStart(' ').TrimEnd(' '), currentweek, year.ToString(), AusbildungsJahr(i)));
                 doc.SaveAs2(Foldername + "\\" + SaveFileName(i, UserName.TrimStart(' ').TrimEnd(' '), currentweek, year.ToString(), AusbildungsJahr(i)));
                 Date1 = Date1.AddDays(DaysUntilMonday(Date1));
@@ -111,7 +108,7 @@ namespace Berichtsheft
                 Form1.increaseLoadingProgress();
             }
             Form1.changelabel("Fertig!");
-           
+
 
 
 
@@ -146,7 +143,7 @@ namespace Berichtsheft
             return finalsavefilename;
 
         }
-   
+
         public void CloseWord(char yes)
         {
             if (doc == null)
@@ -229,7 +226,10 @@ namespace Berichtsheft
             string bookmark = lesezeichen;
             Bookmark bm = doc.Bookmarks[bookmark];
             Range range = bm.Range;
-            range.Text = inhalt;
+            
+            bm.Select();
+            app.Selection.TypeText(inhalt);
+            range.End = range.Start + inhalt.Length;
             doc.Bookmarks.Add(bookmark, range);
 
         }

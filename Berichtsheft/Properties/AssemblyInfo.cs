@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Berichtsheft")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Herzogs?gm?hle Diakonie in M?nchen und Oberbayern e.V.")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Berichtsheft")]
-[assembly: AssemblyCopyright("Copyright © Herzogs?gm?hle Diakonie in M?nchen und Oberbayern e.V. 2020")]
+[assembly: AssemblyCopyright("Copyright © Matse007")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
