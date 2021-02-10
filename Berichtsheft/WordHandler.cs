@@ -48,7 +48,12 @@ namespace Berichtsheft
         private bool firstInizialization;
 
 
-
+        /// <summary>
+        /// A function that loops through the bookmarks in a word document and populates a string list.
+        /// This is used as if you iterate through the Bookmark collection in a word document and add new bookmarks,
+        /// it will keep looping through the newly added elements over and over again. This forces us 
+        /// to create a seperate collection. As this is not altered in a later loop, it does not keep looping through.
+        /// </summary>
         public void populateBookmarks()
         {
             bookmarks.Clear();
@@ -58,12 +63,15 @@ namespace Berichtsheft
             }
 
         }
-
+        /// <summary>
+        /// Simple function to open a document that we passed through earlier. 
+        /// Currently could cause issues if the path to the file is not set.
+        /// </summary>
         public void openDocument()
         {
             doc = app.Documents.Open(str);
         }
-
+        
         public void writeDocuments()
         {
 
@@ -144,7 +152,7 @@ namespace Berichtsheft
 
         }
 
-        public void CloseWord(char yes)
+        public void CloseWord(char closingArguments)
         {
             if (doc == null)
             {
@@ -152,7 +160,7 @@ namespace Berichtsheft
             }
             else
             {
-                switch (yes)
+                switch (closingArguments)
                 {
 
                     case 'y':
@@ -178,7 +186,11 @@ namespace Berichtsheft
 
 
         }
-
+        /// <summary>
+        /// Checking how many days are until the next monday. If it is already monday, it will return 7 days by default.
+        /// </summary>
+        /// <param name="currentdate"></param>
+        /// <returns>Returns the amount of days until the next monday as an integer.</returns>
         private int DaysUntilMonday(DateTime currentdate)
         {
             if (((((int)DayOfWeek.Monday) - ((int)currentdate.DayOfWeek) + 7) % 7) != 0)
@@ -194,7 +206,12 @@ namespace Berichtsheft
 
         /*Calculates the days until the next friday.
          */
-
+        /// <summary>
+        /// Calculates how many days is until the next friday. In the case of the apprenticeship starting on a 
+        /// friday, it will stay on this friday for the calculation. Otherwise goes to the next friday in the current week.
+        /// </summary>
+        /// <param name="currentdate"></param>
+        /// <returns>Days until the next Friday</returns>
         private int DaysUntilFriday(DateTime currentdate)
         {
             if (firstInizialization)
@@ -220,7 +237,14 @@ namespace Berichtsheft
 
 
 
-
+        /// <summary>
+        /// This function is used to write to a bookmark in a word document. Due to FormFields,
+        /// possibly breaking it, we are selecting the entire bookmark, then inserting the text and
+        /// afterwards creating the new range boundaries for the bookmark that we are readding.
+        /// It is being readded, so we can utilize it again in the next iteration.
+        /// </summary>
+        /// <param name="lesezeichen"></param>
+        /// <param name="inhalt"></param>
         private void WriteInBookmark(string lesezeichen, string inhalt)
         {
             string bookmark = lesezeichen;
@@ -233,37 +257,35 @@ namespace Berichtsheft
             doc.Bookmarks.Add(bookmark, range);
 
         }
+
+        /// <summary>
+        /// Simply calculates the year by dividing by 52 weeks and then rounding the result up.
+        /// This does not account for the rare case of a leap year happening.
+        /// </summary>
+        /// <param name="NachweisNummer"></param>
+        /// <returns>Returns the current apprenticeship year.</returns>
         private int AusbildungsJahr(int NachweisNummer)
         {
-            if (NachweisNummer < 53)
-            {
-                return 1;
-            }
-            else if (NachweisNummer > 52 && NachweisNummer < 105)
-            {
-                return 2;
 
-            }
-            else if (NachweisNummer > 104)
-            {
-                return 3;
-            }
-            else
-            {
-                return 0;
-            }
-
+            return (int)Math.Ceiling((double)NachweisNummer / 52);
+           
 
         }
-        /**Function to get the total amount of weeks. In case it is not a full 
-         * 
-         */
-        private decimal GetWeeks(DateTime start, DateTime end)
+        /// <summary>
+        /// This function calculates the total amount of weeks from a starting date another date.
+        /// From dates we are going to the first day of the week and the endDate will go to the sunday of that week.
+        /// From there we are calculating the total amount of days between the 2 dates and calculate the amount of weeks.
+        /// This number is rounded up in case that the start
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        private decimal GetWeeks(DateTime startDate, DateTime endDate)
         {
-            start = GetStartOfWeek(start);
-            end = GetStartOfWeek(end).AddDays(6);
-            decimal days = (int)(end - start).TotalDays;
-            int result = DateTime.Compare(start, end);
+            startDate = GetStartOfWeek(startDate);
+            endDate = GetStartOfWeek(endDate).AddDays(6);
+            decimal days = (int)(endDate - startDate).TotalDays;
+            int result = DateTime.Compare(startDate, endDate);
             if (result > 0 && days == 0)
             {
                 return 1;
@@ -274,7 +296,14 @@ namespace Berichtsheft
             }
         }
 
-
+        /// <summary>
+        /// Getting the start of the week by adding 6 days and then mod 7. 
+        /// This way we always have a rest that we can take to subtract from our current date.
+        /// If we already have monday the result of the first calculation is 0, which means that no days are
+        /// substracted.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns>The start of the week date.</returns>
         private DateTime GetStartOfWeek(DateTime input)
         {
             int dayofWeek = (((int)input.DayOfWeek) + 6) % 7;
