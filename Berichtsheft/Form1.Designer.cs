@@ -22,7 +22,7 @@ namespace Berichtsheft
             base.Dispose(disposing);
         }
 
-        #region Vom Windows Form-Designer generierter Code
+                #region Vom Windows Form-Designer generierter Code
 
         /// <summary>
         /// Erforderliche Methode für die Designerunterstützung.
@@ -68,7 +68,19 @@ namespace Berichtsheft
             this.button3 = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.label1 = new System.Windows.Forms.Label();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.lblBHeftNumCombo = new System.Windows.Forms.Label();
+            this.lblBAusbildungsJahrCombo = new System.Windows.Forms.Label();
+            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
+            this.lblDokuStartDate = new System.Windows.Forms.Label();
+            this.dateTimePicker3 = new System.Windows.Forms.DateTimePicker();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // dateTimePicker1
@@ -79,7 +91,7 @@ namespace Berichtsheft
             this.dateTimePicker1.CalendarTitleBackColor = System.Drawing.Color.Transparent;
             this.dateTimePicker1.CalendarTitleForeColor = System.Drawing.Color.Transparent;
             this.dateTimePicker1.CalendarTrailingForeColor = System.Drawing.Color.Transparent;
-            this.dateTimePicker1.Location = new System.Drawing.Point(410, 367);
+            this.dateTimePicker1.Location = new System.Drawing.Point(410, 363);
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(215, 20);
             this.dateTimePicker1.TabIndex = 0;
@@ -105,7 +117,7 @@ namespace Berichtsheft
             // 
             // dateTimePicker2
             // 
-            this.dateTimePicker2.Location = new System.Drawing.Point(410, 393);
+            this.dateTimePicker2.Location = new System.Drawing.Point(410, 389);
             this.dateTimePicker2.Name = "dateTimePicker2";
             this.dateTimePicker2.Size = new System.Drawing.Size(215, 20);
             this.dateTimePicker2.TabIndex = 5;
@@ -193,7 +205,7 @@ namespace Berichtsheft
             this.btnStep2.Text = "Lesezeichen auswählen";
             this.btnStep2.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.btnStep2.UseVisualStyleBackColor = true;
-            this.btnStep2.Click += new System.EventHandler(this.btnStep2_Click);
+   
             // 
             // PnlNav
             // 
@@ -217,7 +229,7 @@ namespace Berichtsheft
             this.btnStep1.Text = "Word Dokument auswählen";
             this.btnStep1.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.btnStep1.UseVisualStyleBackColor = true;
-            this.btnStep1.Click += new System.EventHandler(this.btnStep1_Click);
+
             // 
             // panel2
             // 
@@ -402,7 +414,7 @@ namespace Berichtsheft
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(410, 310);
+            this.textBox1.Location = new System.Drawing.Point(410, 306);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(215, 20);
             this.textBox1.TabIndex = 41;
@@ -414,7 +426,7 @@ namespace Berichtsheft
             this.textBox2.BackColor = System.Drawing.Color.Gray;
             this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textBox2.Enabled = false;
-            this.textBox2.Location = new System.Drawing.Point(410, 336);
+            this.textBox2.Location = new System.Drawing.Point(410, 332);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(215, 20);
             this.textBox2.TabIndex = 42;
@@ -425,7 +437,7 @@ namespace Berichtsheft
             this.lblNameText.AutoSize = true;
             this.lblNameText.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblNameText.ForeColor = System.Drawing.Color.White;
-            this.lblNameText.Location = new System.Drawing.Point(258, 314);
+            this.lblNameText.Location = new System.Drawing.Point(258, 310);
             this.lblNameText.Name = "lblNameText";
             this.lblNameText.Size = new System.Drawing.Size(127, 16);
             this.lblNameText.TabIndex = 43;
@@ -437,7 +449,7 @@ namespace Berichtsheft
             this.lblBerufTextBox.AutoSize = true;
             this.lblBerufTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblBerufTextBox.ForeColor = System.Drawing.Color.Gray;
-            this.lblBerufTextBox.Location = new System.Drawing.Point(273, 340);
+            this.lblBerufTextBox.Location = new System.Drawing.Point(273, 336);
             this.lblBerufTextBox.Name = "lblBerufTextBox";
             this.lblBerufTextBox.Size = new System.Drawing.Size(112, 16);
             this.lblBerufTextBox.TabIndex = 44;
@@ -449,7 +461,7 @@ namespace Berichtsheft
             this.lblAusbildungsstartDate.AutoSize = true;
             this.lblAusbildungsstartDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAusbildungsstartDate.ForeColor = System.Drawing.Color.White;
-            this.lblAusbildungsstartDate.Location = new System.Drawing.Point(258, 371);
+            this.lblAusbildungsstartDate.Location = new System.Drawing.Point(258, 367);
             this.lblAusbildungsstartDate.Name = "lblAusbildungsstartDate";
             this.lblAusbildungsstartDate.Size = new System.Drawing.Size(128, 16);
             this.lblAusbildungsstartDate.TabIndex = 45;
@@ -461,7 +473,7 @@ namespace Berichtsheft
             this.lblAusbildungsendeDate.AutoSize = true;
             this.lblAusbildungsendeDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAusbildungsendeDate.ForeColor = System.Drawing.Color.White;
-            this.lblAusbildungsendeDate.Location = new System.Drawing.Point(258, 397);
+            this.lblAusbildungsendeDate.Location = new System.Drawing.Point(258, 393);
             this.lblAusbildungsendeDate.Name = "lblAusbildungsendeDate";
             this.lblAusbildungsendeDate.Size = new System.Drawing.Size(133, 16);
             this.lblAusbildungsendeDate.TabIndex = 46;
@@ -474,7 +486,7 @@ namespace Berichtsheft
             this.button3.BackColor = System.Drawing.Color.White;
             this.button3.Enabled = false;
             this.button3.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.button3.Location = new System.Drawing.Point(410, 419);
+            this.button3.Location = new System.Drawing.Point(410, 444);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(215, 23);
             this.button3.TabIndex = 47;
@@ -504,12 +516,136 @@ namespace Berichtsheft
             this.label1.Text = "label1";
             this.label1.Visible = false;
             // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(721, 121);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(39, 20);
+            this.numericUpDown1.TabIndex = 50;
+            this.numericUpDown1.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
+            // 
+            // lblBHeftNumCombo
+            // 
+            this.lblBHeftNumCombo.AutoSize = true;
+            this.lblBHeftNumCombo.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblBHeftNumCombo.ForeColor = System.Drawing.Color.White;
+            this.lblBHeftNumCombo.Location = new System.Drawing.Point(653, 121);
+            this.lblBHeftNumCombo.Name = "lblBHeftNumCombo";
+            this.lblBHeftNumCombo.Size = new System.Drawing.Size(62, 16);
+            this.lblBHeftNumCombo.TabIndex = 51;
+            this.lblBHeftNumCombo.Text = "Startwert:";
+            // 
+            // lblBAusbildungsJahrCombo
+            // 
+            this.lblBAusbildungsJahrCombo.AutoSize = true;
+            this.lblBAusbildungsJahrCombo.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblBAusbildungsJahrCombo.ForeColor = System.Drawing.Color.White;
+            this.lblBAusbildungsJahrCombo.Location = new System.Drawing.Point(653, 202);
+            this.lblBAusbildungsJahrCombo.Name = "lblBAusbildungsJahrCombo";
+            this.lblBAusbildungsJahrCombo.Size = new System.Drawing.Size(62, 16);
+            this.lblBAusbildungsJahrCombo.TabIndex = 53;
+            this.lblBAusbildungsJahrCombo.Text = "Startwert:";
+            // 
+            // numericUpDown2
+            // 
+            this.numericUpDown2.Location = new System.Drawing.Point(721, 202);
+            this.numericUpDown2.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown2.Name = "numericUpDown2";
+            this.numericUpDown2.Size = new System.Drawing.Size(39, 20);
+            this.numericUpDown2.TabIndex = 52;
+            this.numericUpDown2.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // lblDokuStartDate
+            // 
+            this.lblDokuStartDate.AutoSize = true;
+            this.lblDokuStartDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDokuStartDate.ForeColor = System.Drawing.Color.Gray;
+            this.lblDokuStartDate.Location = new System.Drawing.Point(234, 422);
+            this.lblDokuStartDate.Name = "lblDokuStartDate";
+            this.lblDokuStartDate.Size = new System.Drawing.Size(151, 16);
+            this.lblDokuStartDate.TabIndex = 55;
+            this.lblDokuStartDate.Text = "Start der Dokumentation";
+            this.lblDokuStartDate.Visible = false;
+            // 
+            // dateTimePicker3
+            // 
+            this.dateTimePicker3.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dateTimePicker3.CalendarForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(51)))), ((int)(((byte)(73)))));
+            this.dateTimePicker3.CalendarMonthBackground = System.Drawing.Color.Transparent;
+            this.dateTimePicker3.CalendarTitleBackColor = System.Drawing.Color.Transparent;
+            this.dateTimePicker3.CalendarTitleForeColor = System.Drawing.Color.Transparent;
+            this.dateTimePicker3.CalendarTrailingForeColor = System.Drawing.Color.Transparent;
+            this.dateTimePicker3.Enabled = false;
+            this.dateTimePicker3.Location = new System.Drawing.Point(410, 418);
+            this.dateTimePicker3.Name = "dateTimePicker3";
+            this.dateTimePicker3.Size = new System.Drawing.Size(215, 20);
+            this.dateTimePicker3.TabIndex = 54;
+            this.dateTimePicker3.Visible = false;
+            this.dateTimePicker3.ValueChanged += new System.EventHandler(this.dateTimePicker3_ValueChanged);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Help;
+            this.pictureBox1.Image = global::Berichtsheft.Properties.Resources.StatusInformation_exp_16x;
+            this.pictureBox1.InitialImage = global::Berichtsheft.Properties.Resources.StatusInformation_exp_16x;
+            this.pictureBox1.Location = new System.Drawing.Point(386, 419);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(18, 19);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox1.TabIndex = 56;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Visible = false;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Cursor = System.Windows.Forms.Cursors.Help;
+            this.pictureBox2.Image = global::Berichtsheft.Properties.Resources.StatusInformation_exp_16x;
+            this.pictureBox2.InitialImage = global::Berichtsheft.Properties.Resources.StatusInformation_exp_16x;
+            this.pictureBox2.Location = new System.Drawing.Point(766, 202);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(18, 19);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox2.TabIndex = 57;
+            this.pictureBox2.TabStop = false;
+            this.pictureBox2.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(51)))), ((int)(((byte)(73)))));
             this.ClientSize = new System.Drawing.Size(901, 558);
+            this.Controls.Add(this.pictureBox2);
+            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.lblDokuStartDate);
+            this.Controls.Add(this.dateTimePicker3);
+            this.Controls.Add(this.lblBAusbildungsJahrCombo);
+            this.Controls.Add(this.numericUpDown2);
+            this.Controls.Add(this.lblBHeftNumCombo);
+            this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.button3);
@@ -548,6 +684,10 @@ namespace Berichtsheft
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_Keypress);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -592,6 +732,14 @@ namespace Berichtsheft
         private Button button3;
         private ProgressBar progressBar1;
         private Label label1;
+        private NumericUpDown numericUpDown1;
+        private Label lblBHeftNumCombo;
+        private Label lblBAusbildungsJahrCombo;
+        private NumericUpDown numericUpDown2;
+        private Label lblDokuStartDate;
+        private DateTimePicker dateTimePicker3;
+        private PictureBox pictureBox1;
+        private PictureBox pictureBox2;
     }
 }
 
