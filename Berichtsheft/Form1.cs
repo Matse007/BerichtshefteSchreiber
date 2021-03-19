@@ -264,7 +264,7 @@ namespace Berichtsheft
 
 
         }
-
+        //Event on when the user clicks the "open word file button".
         private void button1_Click(object sender, EventArgs e)
         {
 
@@ -316,7 +316,7 @@ namespace Berichtsheft
 
 
         }
-
+        //Function to drag the window anywhere you want.
         private void Form1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -327,7 +327,7 @@ namespace Berichtsheft
             }
         }
 
-
+        //Function to automatically change the background colour on hovering over those buttons.
         private void buttondesigner()
         {
             btnStep1.FlatAppearance.MouseOverBackColor = btnStep1.BackColor;

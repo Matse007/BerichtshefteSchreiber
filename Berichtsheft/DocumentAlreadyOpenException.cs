@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Berichtsheft
 {
+    /// <summary>
+    /// Custom Exception for when a word document is already open when trying to open one.
+    /// </summary>
     [Serializable]
     class DocumentAlreadyOpenException : Exception
     {

@@ -55,7 +55,9 @@ namespace Berichtsheft
         public string Berufsbezeichnung { get; set; }
         private bool firstInizialization;
         public int Berichtnummer {get;set; }
-
+        /// <summary>
+        /// The standard constructor that also automatically creates a logger.
+        /// </summary>
         public WordHandler()
         {
             Log.Logger = new LoggerConfiguration()
@@ -114,14 +116,19 @@ namespace Berichtsheft
                 throw;
             }
         }
-        
+        /// <summary>
+        /// The main Method of this class. Based on the user inputs, calculates the total amount of reports it has to do,
+        /// checks what has to be filled out and then starts to generate all the reports in a for loop.
+        /// </summary>
         public void writeDocuments()
         {
             Log.Debug("Starting the Word writing Process.");
-
+            //Get the initial week. 
             int currentweek = GetIso8601WeekOfYear(Date1);
+            //Get the year of the starting date.
             year = Date1.Year;
 
+            //Calculates total amount of reports that need to be generated. 
             int WeeksInTotal = (int)GetWeeks(Date1, Date2);
             Form1.setloadingBar(WeeksInTotal);
             Log.Debug("Amount of loops: " + WeeksInTotal);
@@ -226,7 +233,11 @@ namespace Berichtsheft
 
 
         }
-
+        /// <summary>
+        /// Gets the week of the year for a specific date, following the ISO8601 norm.
+        /// </summary>
+        /// <param name="time">The date where you are trying to get the current week from.</param>
+        /// <returns>The week of the year of that date.</returns>
         public static int GetIso8601WeekOfYear(DateTime time)
         {
             // Seriously cheat.  If its Monday, Tuesday or Wednesday, then it'll 
@@ -242,7 +253,15 @@ namespace Berichtsheft
             return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(time, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
         }
 
-        //Returns the final savename. 
+        /// <summary>
+        /// Simple function that creates a String for the filename.
+        /// </summary>
+        /// <param name="iterator">Current iteration of the loop</param>
+        /// <param name="name">Name of the user</param>
+        /// <param name="kalenderwoche">Current Calenderweek</param>
+        /// <param name="year">Current year</param>
+        /// <param name="ausbildungsjahr">Current year of the apprencticeship</param>
+        /// <returns>The filename</returns>
         private string SaveFileName(int iterator, string name, int kalenderwoche, string year, int ausbildungsjahr)
         {
             string[] sub = name.Split(' ');
@@ -252,7 +271,13 @@ namespace Berichtsheft
             return finalsavefilename;
 
         }
-
+        /// <summary>
+        /// Function for closing Word, either entirely or the current document. Each time calls the GC, and in case that the 
+        /// entire Word instance is closed, it releases the object, so no Word process will be running afterwards. Also, runs the 
+        /// GC manually to ensure, that everything is disposed of properly.
+        /// </summary>
+        /// <param name="closingArguments"> Enum Parameter that determines if you want to close the current doc or the 
+        /// entire word instance.</param>
         public void CloseWord(ClosingArguments closingArguments)
         {
             if (doc == null)

@@ -10,7 +10,8 @@ namespace Berichtsheft
     static class Program
     {
         /// <summary>
-        /// Der Haupteinstiegspunkt für die Anwendung.
+        /// The main start for the entire program. We are deleting the logfile for a previous session, if one exists.
+        /// Afterwards a new logger and logfile is created and we are loading the Form.
         /// </summary>
         [STAThread]
         static void Main()
