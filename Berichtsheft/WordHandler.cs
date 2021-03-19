@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Resources;
 using Word = Microsoft.Office.Interop.Word;
 using System.Windows.Forms;
+using Serilog;
 
 namespace Berichtsheft
 {
@@ -13,6 +14,8 @@ namespace Berichtsheft
     {
 
         ResourceWriter rw = new ResourceWriter(@".\Resources.resx");
+        Microsoft.Office.Interop.Word.Application WordObj;
+
         Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
         private string str;
 
@@ -21,14 +24,19 @@ namespace Berichtsheft
             get { return this.str; }
             set { this.str = value; }
         }
-
+        public enum ClosingArguments
+        {
+            document,
+            word
+        }
         bool documentopen { get; set; }
         private int year;
         List<string> bookmarks = new List<string>();
         public DateTime Date1 { get; set; }
         public DateTime Date2 { get; set; }
+        public DateTime AusbildungsstartDate { get; set; }
 
-        public int Year { get => year; set => year = value; }
+        public int AusbildungsYear { get; set; }
         public List<string> Bookmarks { get => bookmarks; set => bookmarks = value; }
         private Document doc = null;
         public Document Doc { get => doc; set => doc = value; }
@@ -46,7 +54,18 @@ namespace Berichtsheft
         public string UserName { get; set; }
         public string Berufsbezeichnung { get; set; }
         private bool firstInizialization;
-
+        public int Berichtnummer {get;set; }
+        /// <summary>
+        /// The standard constructor that also automatically creates a logger.
+        /// </summary>
+        public WordHandler()
+        {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.File("logs/BerichtshefteSchreiberLog.txt", shared: true, retainedFileCountLimit: 1)
+                .CreateLogger();
+            WordObj = (Microsoft.Office.Interop.Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
+        }
 
         /// <summary>
         /// A function that loops through the bookmarks in a word document and populates a string list.
@@ -56,10 +75,18 @@ namespace Berichtsheft
         /// </summary>
         public void populateBookmarks()
         {
-            bookmarks.Clear();
-            foreach (Bookmark bm in doc.Bookmarks)
+            try
             {
-                bookmarks.Add(bm.Name);
+                bookmarks.Clear();
+                foreach (Bookmark bm in doc.Bookmarks)
+                {
+                    bookmarks.Add(bm.Name);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error("Ein Fehler ist in der Funktion populateBookmarks aufgetreten: " + e.ToString());
+                throw;
             }
 
         }
@@ -69,51 +96,132 @@ namespace Berichtsheft
         /// </summary>
         public void openDocument()
         {
-            doc = app.Documents.Open(str);
+
+            try
+            {
+                foreach (Document docum in WordObj.Documents)
+                {
+                    if (docum.FullName.Equals(str)){
+                        MessageBox.Show("The Word document has already been opened.");
+                        Log.Error("Word Document already opened");
+                        throw new DocumentAlreadyOpenException("Document already opened");
+                    }
+                }
+                Log.Information("Sucesfully opened the document: " + str);
+                doc = app.Documents.Open(str);
+            }
+            catch (Exception e)
+            {
+                Log.Error("The following Error occured: " + e.ToString());
+                throw;
+            }
         }
-        
+        /// <summary>
+        /// The main Method of this class. Based on the user inputs, calculates the total amount of reports it has to do,
+        /// checks what has to be filled out and then starts to generate all the reports in a for loop.
+        /// </summary>
         public void writeDocuments()
         {
-
-
+            Log.Debug("Starting the Word writing Process.");
+            //Get the initial week. 
             int currentweek = GetIso8601WeekOfYear(Date1);
-            int BerichtNummer = 1;
-
+            //Get the year of the starting date.
             year = Date1.Year;
 
-
+            //Calculates total amount of reports that need to be generated. 
             int WeeksInTotal = (int)GetWeeks(Date1, Date2);
             Form1.setloadingBar(WeeksInTotal);
-            for (int i = BerichtNummer; i <= WeeksInTotal; i++)
+            Log.Debug("Amount of loops: " + WeeksInTotal);
+            //Im Falle das die Dokumentation erst ab einen späteren Zeitpunkt beginnen soll, wird hier ein neuer totaler Wert berechnet.
+            //Dieser wird um 1 abgezogen, da ansonsten eine zusätzliche Iteration durchlaufen wird.
+            if (Berichtnummer > 1)
+            {
+                WeeksInTotal =  WeeksInTotal + Berichtnummer -1;
+            }           
+            for (int i = Berichtnummer; i <= WeeksInTotal; i++)
             {
 
 
-                WriteInBookmark(bmnummer, i.ToString());
+                try
+                {
+                    WriteInBookmark(bmnummer, i.ToString());
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Beim schreiben in die Berichtsheftnummer-Textmarke ist folgender Fehler aufgetreten: " + e.ToString());
+                    throw;
+                }
 
 
-                WriteInBookmark(bmwochestart, Date1.ToString("d"));
-
-                // TODO: Datum vor der for schleife initializieren.
+                try
+                {
+                    WriteInBookmark(bmwochestart, Date1.ToString("d"));
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Beim schreiben in die Wochenstart-Textmarke ist folgender Fehler aufgetreten: " + e.ToString());
+                    throw;
+                }   
                 Date1 = Date1.AddDays(DaysUntilFriday(Date1));
 
-                WriteInBookmark(bmwocheende, Date1.ToString("d"));
-                WriteInBookmark(bmausbildungsjahr, AusbildungsJahr(i).ToString());
+                try
+                {
+                    WriteInBookmark(bmwocheende, Date1.ToString("d"));
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Beim schreiben in die Ende der Woche Textmarke ist folgender Fehler aufgetreten: " + e.ToString());
+                    throw;
+                }
+                try
+                {
+                    WriteInBookmark(bmausbildungsjahr, AusbildungsJahr(Date1).ToString());
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Beim schreiben in die Ausbildungsjahr-Textmarke ist folgender Fehler aufgetreten: " + e.ToString());
+                    throw;
+                }
                 if (String.IsNullOrEmpty(BmName) == false)
                 {
-                    WriteInBookmark(BmName, UserName.TrimStart(' ').TrimEnd(' '));
+                    try
+                    {
+                        WriteInBookmark(BmName, UserName.TrimStart(' ').TrimEnd(' '));
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error("Beim schreiben in die Namens-Textmarke ist folgender Fehler aufgetreten: " + e.ToString());
+                        throw;
+                    }
                 }
                 if (String.IsNullOrEmpty(BmBerufsbezeichnung) == false)
                 {
-                    WriteInBookmark(BmBerufsbezeichnung, Berufsbezeichnung);
+                    try
+                    {
+                        WriteInBookmark(BmBerufsbezeichnung, Berufsbezeichnung);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error("Beim schreiben in die Berufsbezeichnungs-Textmarke ist folgender Fehler aufgetreten: " + e.ToString());
+                        throw;
+                    }
                 }
 
 
-                Form1.changelabel("Schreibe " + SaveFileName(i, UserName.TrimStart(' ').TrimEnd(' '), currentweek, year.ToString(), AusbildungsJahr(i)));
-                doc.SaveAs2(Foldername + "\\" + SaveFileName(i, UserName.TrimStart(' ').TrimEnd(' '), currentweek, year.ToString(), AusbildungsJahr(i)));
-                Date1 = Date1.AddDays(DaysUntilMonday(Date1));
-                currentweek = GetIso8601WeekOfYear(Date1);
-                year = Date1.Year;
-                Form1.increaseLoadingProgress();
+                try
+                {
+                    Form1.changelabel("Schreibe " + SaveFileName(i, UserName.TrimStart(' ').TrimEnd(' '), currentweek, year.ToString(), AusbildungsJahr(Date1)));
+                    doc.SaveAs2(Foldername + "\\" + SaveFileName(i, UserName.TrimStart(' ').TrimEnd(' '), currentweek, year.ToString(), AusbildungsJahr(Date1)));
+                    Date1 = Date1.AddDays(DaysUntilMonday(Date1));
+                    currentweek = GetIso8601WeekOfYear(Date1);
+                    year = Date1.Year;
+                    Form1.increaseLoadingProgress();
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Im letzten abschnitt der Schleife ist folgender Fehler aufgetreten: " + e.ToString());
+                    throw;
+                }
             }
             Form1.changelabel("Fertig!");
 
@@ -125,7 +233,11 @@ namespace Berichtsheft
 
 
         }
-
+        /// <summary>
+        /// Gets the week of the year for a specific date, following the ISO8601 norm.
+        /// </summary>
+        /// <param name="time">The date where you are trying to get the current week from.</param>
+        /// <returns>The week of the year of that date.</returns>
         public static int GetIso8601WeekOfYear(DateTime time)
         {
             // Seriously cheat.  If its Monday, Tuesday or Wednesday, then it'll 
@@ -141,7 +253,15 @@ namespace Berichtsheft
             return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(time, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
         }
 
-        //Returns the final savename. 
+        /// <summary>
+        /// Simple function that creates a String for the filename.
+        /// </summary>
+        /// <param name="iterator">Current iteration of the loop</param>
+        /// <param name="name">Name of the user</param>
+        /// <param name="kalenderwoche">Current Calenderweek</param>
+        /// <param name="year">Current year</param>
+        /// <param name="ausbildungsjahr">Current year of the apprencticeship</param>
+        /// <returns>The filename</returns>
         private string SaveFileName(int iterator, string name, int kalenderwoche, string year, int ausbildungsjahr)
         {
             string[] sub = name.Split(' ');
@@ -151,31 +271,39 @@ namespace Berichtsheft
             return finalsavefilename;
 
         }
-
-        public void CloseWord(char closingArguments)
+        /// <summary>
+        /// Function for closing Word, either entirely or the current document. Each time calls the GC, and in case that the 
+        /// entire Word instance is closed, it releases the object, so no Word process will be running afterwards. Also, runs the 
+        /// GC manually to ensure, that everything is disposed of properly.
+        /// </summary>
+        /// <param name="closingArguments"> Enum Parameter that determines if you want to close the current doc or the 
+        /// entire word instance.</param>
+        public void CloseWord(ClosingArguments closingArguments)
         {
             if (doc == null)
             {
-                Console.WriteLine("No doc has been opened");
+                Log.Information("No doc has been opened while closing the application. No instances of Word or any Documents have to be closed.");
             }
             else
             {
                 switch (closingArguments)
                 {
 
-                    case 'y':
+                    case ClosingArguments.word:
                         doc.Close();
                         doc = null;
                         app.Quit();
                         System.Runtime.InteropServices.Marshal.FinalReleaseComObject(app);
                         GC.Collect();
                         GC.WaitForPendingFinalizers();
+                        Log.Information("Document and Word Application have been closed successfully.");
                         break;
-                    case 'n':
+                    case ClosingArguments.document:
                         doc.Close();
                         doc = null;
                         GC.Collect();
                         GC.WaitForPendingFinalizers();
+                        Log.Information("Document has been closed successfully.");
                         break;
                     default:
                         Console.WriteLine("While closing the current word document, something went wrong");
@@ -264,11 +392,16 @@ namespace Berichtsheft
         /// </summary>
         /// <param name="NachweisNummer"></param>
         /// <returns>Returns the current apprenticeship year.</returns>
-        private int AusbildungsJahr(int NachweisNummer)
+        private int AusbildungsJahr(DateTime currentDate)
         {
-
-            return (int)Math.Ceiling((double)NachweisNummer / 52);
-           
+            DateTime yearDate = AusbildungsstartDate.AddYears(1);
+            int returnValue = AusbildungsYear;
+            while(currentDate > yearDate)
+            {
+                returnValue = returnValue + 1;
+                yearDate = yearDate.AddYears(1);
+            }
+            return returnValue;
 
         }
         /// <summary>
