@@ -7,7 +7,7 @@ using System.Resources;
 using Word = Microsoft.Office.Interop.Word;
 using System.Windows.Forms;
 using Serilog;
-
+//temp
 namespace Berichtsheft
 {
     class WordHandler
