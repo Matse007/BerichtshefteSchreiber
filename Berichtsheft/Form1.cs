@@ -13,7 +13,6 @@ using Word = Microsoft.Office.Interop.Word;
 using System.Reflection;
 using System.Resources;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Serilog;
 
 namespace Berichtsheft
 {
@@ -24,8 +23,8 @@ namespace Berichtsheft
         */
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
-        
 
+        int currentstate;
         List<ComboBox> comboBoxes = new List<ComboBox>();
         List<Control> state1controls = new List<Control>();
         List<Control> state2controls = new List<Control>();
@@ -33,9 +32,11 @@ namespace Berichtsheft
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         public static extern bool ReleaseCapture();
+        Document doc = null;
+
+        int year;
         private bool datetimepicker1_changed;
         private bool datetimepicker2_changed;
-        private bool datetimepicker3_changed;
         private bool comboBox1set;
         private bool comboBox2set;
         private bool comboBox3set;
@@ -47,7 +48,6 @@ namespace Berichtsheft
             "Bitte das Lesezeichen für das Ende der Woche auswählen.",
              "Bitte das Lesezeichen für das Ausbildungsjahr auswählen."};
 
-        
 
         List<string> bookmarks = new List<string>();
         WordHandler whandler = new WordHandler();
@@ -77,18 +77,7 @@ namespace Berichtsheft
         {
 
             InitializeComponent();
-            new ToolTip().SetToolTip(pictureBox1, "Dieses Feld ist nur verfügbar, wenn die Berichtshefte nicht ab dem 1. generiert werden." +
-                "Im Normalfall ist diese Option nicht verfügbar,\njedoch im Falle, dass der Benutzer erst verspätet damit anfängt, seine Berichtshefte" +
-                "zu generieren und dadurch nicht mit dem\nBerichtsheft 1 startet, kann der Benutzer so noch die Korrekten Parameter angeben" +
-                "die zu der Richtigen Berechnung benötigt werden.");
-            new ToolTip().SetToolTip(pictureBox2, "Diesen Wert NUR ändern, wenn neue Berichtshefte ab diesem Ausbildungsjahr generiert werden sollen." +
-                "Diese Funktion kommt dann zum\nEinsatz, wenn eispielsweise ein Azubi direkt in das 2. Lehrjahr startet und von dem 2. Lehrjahr aus" +
-                "die Hefte Anfangend generiert werden sollen.");
-            // Implementing a Logger in this class as well to log all necessary an optional data.
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .WriteTo.File("logs/BerichtshefteSchreiberLog.txt", shared: true, retainedFileCountLimit: 1)
-                .CreateLogger();
+
 
 
             comboBoxes.AddRange(this.Controls.OfType<ComboBox>().ToArray());
@@ -97,19 +86,12 @@ namespace Berichtsheft
             {
                 state1controls.Add(l);
             }
-            state1controls.AddRange(this.Controls.OfType<NumericUpDown>().ToArray());
-            state1controls.Add(pictureBox2);
-            state2controls.AddRange(new List<Control> { lblAusbildungsstartDate, lblAusbildungsendeDate, lblDokuStartDate , dateTimePicker1,
-                dateTimePicker2, dateTimePicker3, lblNameText, lblBerufTextBox, textBox1, textBox2, pictureBox1});
+            state2controls.AddRange(new List<Control> { lblAusbildungsstartDate, lblAusbildungsendeDate, dateTimePicker1, dateTimePicker2, lblNameText, lblBerufTextBox, textBox1, textBox2 });
             prgbar[0] = progressBar1;
             lbl[0] = label1;
             alterstate(0);
-            Log.Verbose("Finished initializing the UI");
         }
-        /// <summary>
-        /// Funktion die verschiedene 
-        /// </summary>
-        /// <param name="state"></param>
+
         private void alterstate(int state)
         {
 
@@ -119,7 +101,6 @@ namespace Berichtsheft
                 case 0:
                     dateTimePicker1.Visible = false;
                     dateTimePicker2.Visible = false;
-                    dateTimePicker3.Visible = false;
                     PnlNav.Height = btnStep1.Height;
                     PnlNav.Top = btnStep1.Top;
                     PnlNav.Left = btnStep1.Left;
@@ -132,16 +113,14 @@ namespace Berichtsheft
                     foreach (Control c in state1controls)
                     {
                         c.Visible = false;
-                        
                     }
-                    Log.Verbose("Switched the UI State to 0");
+                    currentstate = 0;
                     break;
                 case 1:
 
                     whandler.populateBookmarks();
                     dateTimePicker1.Visible = false;
                     dateTimePicker2.Visible = false;
-                    dateTimePicker3.Visible = false;
 
                     PnlNav.Height = btnStep2.Height;
                     PnlNav.Top = btnStep2.Top;
@@ -170,21 +149,21 @@ namespace Berichtsheft
                             c.Enabled = true;
                         }
                     }
-                    catch (System.NullReferenceException e)
+                    catch (System.NullReferenceException)
                     {
-                        Log.Error(e.ToString());
+
                         throw;
                     }
 
-                    Log.Verbose("Switched the UI State to 1");
+                    currentstate = 1;
                     break;
                 case 2:
                     dateTimePicker1.CustomFormat = " ";
                     dateTimePicker1.Format = DateTimePickerFormat.Custom;
                     dateTimePicker2.CustomFormat = " ";
                     dateTimePicker2.Format = DateTimePickerFormat.Custom;
-                    dateTimePicker3.CustomFormat = " ";
-                    dateTimePicker3.Format = DateTimePickerFormat.Custom;
+                    dateTimePicker1.Visible = true;
+                    dateTimePicker2.Visible = true;
                     PnlNav.Height = btnStep3.Height;
                     PnlNav.Top = btnStep3.Top;
                     PnlNav.Left = btnStep3.Left;
@@ -199,7 +178,8 @@ namespace Berichtsheft
 
                         c.Visible = true;
                     }
-                    Log.Verbose("Switched the UI State to 2");
+
+                    currentstate = 2;
                     break;
                 case 3:
                     PnlNav.Height = btnStep4.Height;
@@ -209,7 +189,6 @@ namespace Berichtsheft
                     btnStep3.BackColor = Color.FromArgb(24, 30, 54);
                     btnStep2.BackColor = Color.FromArgb(24, 30, 54);
                     btnStep4.BackColor = Color.FromArgb(46, 51, 73);
-                    Log.Verbose("Switched the UI State to 3");
                     break;
 
 
@@ -235,39 +214,24 @@ namespace Berichtsheft
         */
         private void openwordfile()
         {
-            Log.Verbose("Waiting for User to select a Word Document.");
+            whandler.CloseWord('n');
             OpenFileDialog dia = new OpenFileDialog();
 
             dia.InitialDirectory = "C:\\Users";
             dia.Filter = "Word Documents (*.doc;*docx)|*.doc; *docx";
             if (dia.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-
-                try
-                {
-                    whandler.CloseWord(WordHandler.ClosingArguments.document);
-                    whandler.Str = dia.FileName;
-
-                    whandler.openDocument();
-                    alterstate(1);
-                    textBox9.Text = dia.FileName;
-                }
-                catch (DocumentAlreadyOpenException e)
-                {
-                    Log.Error("openwordfile was unsuccesful. Error that was thrown: " + e);    
-                }
-            }
-            else
-            {
-                Log.Verbose("The Fileselection was closed without a Word File being attempted to be opened.");
+                whandler.Str = dia.FileName;
+                whandler.openDocument();
+                alterstate(1);
+                textBox9.Text = dia.FileName;
             }
 
 
         }
-        //Event on when the user clicks the "open word file button".
+
         private void button1_Click(object sender, EventArgs e)
         {
-
             openwordfile();
            
         }
@@ -304,7 +268,7 @@ namespace Berichtsheft
                   == DialogResult.Yes
               )
             {
-                whandler.CloseWord(WordHandler.ClosingArguments.word);
+                whandler.CloseWord('y');
                 System.Windows.Forms.Application.Exit();
             }
 
@@ -316,7 +280,7 @@ namespace Berichtsheft
 
 
         }
-        //Function to drag the window anywhere you want.
+
         private void Form1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -327,7 +291,61 @@ namespace Berichtsheft
             }
         }
 
-        //Function to automatically change the background colour on hovering over those buttons.
+
+
+
+
+        private void textBox6_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox7_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox8_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listBox4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnStep1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnStep2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
         private void buttondesigner()
         {
             btnStep1.FlatAppearance.MouseOverBackColor = btnStep1.BackColor;
@@ -393,16 +411,10 @@ namespace Berichtsheft
             dateTimePicker1.CustomFormat = "dd/MM/yyyy";
             datetimepicker1_changed = true;
             datesAndTextSet();
-            if(dateTimePicker3.Enabled == false)
-            {
-                dateTimePicker3.CustomFormat = "dd/MM/yyyy";
-                dateTimePicker3.Value = dateTimePicker1.Value.Date;
-                datetimepicker3_changed = true;
-            }
         }
         private void datesAndTextSet()
         {
-            if (datetimepicker1_changed && datetimepicker2_changed && datetimepicker3_changed && String.IsNullOrEmpty(textBox1.Text) == false)
+            if (datetimepicker1_changed && datetimepicker2_changed && String.IsNullOrEmpty(textBox1.Text) == false)
             {
                 button3.Visible = true;
                 button3.Enabled = true;
@@ -534,12 +546,6 @@ namespace Berichtsheft
         }
         private void button3_Click(object sender, EventArgs e)
         {
-            if(dateTimePicker2.Value.Date < dateTimePicker3.Value.Date && dateTimePicker2.Value.Date < dateTimePicker1.Value.Date)
-                {
-                Log.Warning("No legal date selection has been made.");
-                MessageBox.Show("Datum wurde nicht richtig angegeben.");
-                return;
-            }
             whandler.Bmnummer = comboBox1.SelectedItem.ToString();
             whandler.Bmwochestart = comboBox2.SelectedItem.ToString();
             whandler.Bmwocheende = comboBox3.SelectedItem.ToString();
@@ -555,11 +561,8 @@ namespace Berichtsheft
 
             whandler.UserName = textBox1.Text;
             whandler.Berufsbezeichnung = textBox2.Text;
-            whandler.Date1 = dateTimePicker3.Value.Date;
+            whandler.Date1 = dateTimePicker1.Value.Date;
             whandler.Date2 = dateTimePicker2.Value.Date;
-            whandler.AusbildungsstartDate = dateTimePicker1.Value.Date;
-            whandler.AusbildungsYear = (int)numericUpDown2.Value;
-            whandler.Berichtnummer = (int)numericUpDown1.Value;
             /**Creating a folder select window. I am asking for a folder to be selected where we will save the final "Berichtshefte". 
              * I am using Windows CommonOpenFileDialog to make it look like a File Select window while still being able to uzilize it as a folder picker
              * This is part of the Windows API Code Pack, imported through the NuGet Packet Manager.
@@ -584,7 +587,7 @@ namespace Berichtsheft
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 if (result1 == DialogResult.OK)
                 {
-                    whandler.CloseWord(WordHandler.ClosingArguments.word);
+                    whandler.CloseWord('y');
                     System.Windows.Forms.Application.Exit();
                 }
 
@@ -593,27 +596,6 @@ namespace Berichtsheft
 
 
 
-        }
-
-        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
-        {
-            if(numericUpDown1.Value > 1)
-            {
-                dateTimePicker3.Enabled = true;              
-                lblDokuStartDate.ForeColor = Color.FromArgb(255, 255, 255);
-            } else
-            {
-                dateTimePicker3.Enabled = false;
-                dateTimePicker3.Value = dateTimePicker1.Value.Date;
-                lblDokuStartDate.ForeColor = Color.FromArgb(128, 128, 128);
-            }
-        }
-
-        private void dateTimePicker3_ValueChanged(object sender, EventArgs e)
-        {
-            dateTimePicker3.CustomFormat = "dd/MM/yyyy";
-            datetimepicker3_changed = true;
-            datesAndTextSet();
         }
     }
 
